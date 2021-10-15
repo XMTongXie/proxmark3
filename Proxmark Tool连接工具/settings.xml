@@ -1,0 +1,1916 @@
+<?xml version="1.0"?>
+<pm3>
+
+
+<section title="HF (High Frequency)" tooltip="High Frequency Functions/Commands">
+
+   	<section title="ISO14443A" tooltip="Manage ISO14443A tags (ex. MIFARE)">
+		<section title="14443A LIST" tooltip="List ISO14443A History" uniqueId="14ahis" >
+			<item type="checkbox" valueChecked="f" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, also shows frame delay times" uniqueId="14af" text="Check to also shows frame delay times"/>	
+			<item type="checkbox" valueChecked="c" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, put CRCs between [crc]" uniqueId="14ac" text="Check to put CRCs between [crc]"/>	
+			<item type="button" text="LIST" tooltip="Press to read ISO14443A history" action0="hf list 14a $14af $14ac" />
+		</section> 	
+		
+		<section title="14443A READER" tooltip="Act like an ISO14443A reader" uniqueId="14areader" >
+			<item type="button" text="ACT AS A READER" tooltip="Press to use PM3 as an ISO14443A reader" action0="hf 14a reader" />
+		</section> 
+		
+			<section title="14443A SEND RAW COMMANDS" tooltip="Send raw commands to tag-card" uniqueId="14acmd" >
+				<item type="checkbox" valueChecked="-r" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, PM3 will not read response from tag" uniqueId="readResponsea" text="do not read response"/>
+				<item type="checkbox" valueChecked="-c" valueUnchecked="" defaultValue="checked" tooltip="If checked, PM3 will auto-calculate and append CRC to sent command" uniqueId="calcCRCa" text="auto-calculate and append CRC"/>
+				<item type="checkbox" valueChecked="-p" valueUnchecked="" defaultValue="checked" tooltip="If checked, PM3 will leave the signal field ON after receive" uniqueId="fieldona" text="leave the signal field ON after receive"/>			
+				<item type="drop-down" values="-a,-s" defaultValue="-s" tooltip="Active signal field modality" uniqueId="fieldonsel" label="select field mode (a=On-Without-Select; s=On-With-Select)" width="35" />							
+				<item type="checkbox" valueChecked="-t" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, PM3 will use below specified timeout" uniqueId="14at" text="Use specified timeout (write value in the text field below)" />							
+				<item type="textbox" defaultValue="" tooltip="Timeout (in millisecond)" uniqueId="14atimeout" label="Timeout (expressed in ms):" width="180"/>								
+				<item type="checkbox" valueChecked="-b 7" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, PM3 will send 1st byte as 7bit (useful for mifare and changeable UID mifare)" uniqueId="bits" text="send 1st byte as 7bit" />							
+				<item type="textbox" defaultValue="3000" tooltip="Hex data to be sent" uniqueId="dataTextbox" label="Data to be sent (in hex):" width="180"/>				
+				<item type="button" text="SEND RAW COMMAND" tooltip="Press button to Send Raw Command to tag/card" action0="hf 14a raw $readResponsea $calcCRCa $fieldona $fieldonsel $14at $14atimeout $bits $dataTextbox" />
+						<item type="label" label="
+						Main ISO14443A Commands: 
+					------------------------------------------------------------------------------------------------------------------	
+						30         = Read (usage: 30+1byte block number+2bytes ISO14443A-CRC - answer: 16bytes)
+						A2         = Write (usage: A2+1byte block number+4bytes data+2bytes ISO14443A-CRC - answer: 0A [ACK] or 00 [NAK])
+						52 (7bits) = WUPA (usage: 52(7bits) - answer: 2bytes ATQA)
+						93 20      = Anticollision (usage: 9320 - answer: 4bytes UID+1byte UID-bytes-xor)
+						93 70      = Select (usage: 9370+5bytes 9320 answer - answer: 1byte SAK)
+						50 00      = Halt (usage: 5000+2bytes ISO14443A-CRC - no answer from card)
+						40 (7bits) = Used to put Chinese Changeable UID cards in special mode (must be followed by 43 (8bits) - answer: 0A
+					------------------------------------------------------------------------------------------------------------------" />					
+			</section>					
+		
+		<section title="14443A COLLECT UIDs" tooltip="Collect ISO14443A UIDs" uniqueId="14acuids"  width="120">
+			<item type="textbox" defaultValue="" tooltip="Number of UIDs you want to collect" uniqueId="dataUIDs" label="(Optional) Number of UIDs to collect (>0)"/>
+			<item type="button" text="COLLECT UIDs" tooltip="Press to use PM3 as an ISO14443A reader" action0="hf 14a cuids $dataUIDs" />
+		</section> 
+		
+		<section title="14443A SIMULATE" tooltip="Simulate behaviour of an ISO14443A tag (clone)" uniqueId="14asim" >
+			<item type="drop-down" defaultValue="" values="1,2,3,4" tooltip="Mode can be: '1'=MIFARE Classic, '2'=MIFARE Ultralight, '3'=MIFARE DESFire, '4'=ISO/IEC 14443-4 " uniqueId="14atype" label="Mode" width="30"/>		
+			<item type="textbox" defaultValue="" tooltip="UID value to simulate" uniqueId="14auid" label="UID:" width="120"/>
+			<item type="button" text="SIMULATE" tooltip="Press to simulate an ISO14443A tag - Press PM3 button to stop simulation!" action0="hf 14a sim $14atype $14auid" />
+		</section> 
+	
+		<section title="14443A SNOOP" tooltip="Eavesdrop ISO14443 TypeA Communication" uniqueId="14asn" >
+			<item type="button" text="SNOOP" tooltip="Press to eavesdrop communication; snooped data will make PM3 green led to turn on; press PM3 button 1 time to stop snooping" action0="hf 14a snoop" />
+			<item type="label" label="
+Sniff the communication between a reader and a tag. The communication from both directions is captured
+and stored in a buffer (BigBuf) on the Proxmark and can be downloaded by hi14alist. By default, 
+the Proxmark waits for communication to occur which means that it will 'hang' forever if nothing happens.
+You can press the button on the device to stop acquisition and get back to the command line. The command 
+hi14asnoop starts sniffing the communication between a reader and card until the buffer is full. Below is 
+the result of the sniffing captured by executing hi14alist. The result shows the repeated anticollision 
+loop. This indicates that the reader is just polling if the card is still there. 
+This anticollision loop walks through the following states :
+
+Reader : 26 to Card : 04 00 The reader sends an REQA (Request for type A) message 
+                           on which the card responded with its type.
+Reader : 93 20 from Card : 2a 69 8c 43 8c The reader starts the anticollision to select 
+                           a card and requests its UID. The card responded with its UID. The last 
+                           byte is the so-called BCC18 and is the result of XOR-ing the first four UID-bytes.
+Reader : 93 70 2a 69 8c 43 8c to Card : 08 b6 dd The reader selects the desired card by sending 
+                           93 70 followed by the UID of the card. If the card is successfully selected it 
+                           will response with a SAK19 which means that the card is now ready to handle commands 
+                           of the higher layer protocol. The SAK consists of one byte (08) that indicates the 
+                           card type and is followed by two CRC bytes. " />
+		</section> 		
+	
+
+	<section title="14443A TAGs">
+	
+		<section title="Infineon" tooltip="Infineon Specific Functions/Commands/Tools" >
+		
+			<section title="my-d move" tooltip="Manage my-d move tags" uniqueId="mydmove" >
+					<item type="textbox" defaultValue="" tooltip="Block number to read (from 00 to 25)" label="Block Number (00-25):" uniqueId="mydmoveblockr" width="35" />
+					<item type="button" text="READ BLOCK" tooltip="Press button to read the selected block" action0="hf 14a raw -c -s 30 $mydmoveblockr" waitfor="" action1="" />
+						<item type="label" label="READ BLOCK answer is 16bytes + 2bytes CRC (1st byte is 1st-selected-block byte - each 
+						block = 4bytes - if you select 25 you receive bytes form blocks 25, 00, 01 and 02)
+					--------------------------------------------------------------------------------------" />	
+					<item type="textbox" defaultValue="" tooltip="Block number to write (from 00 to 25)" label="Block Number (00-25):" uniqueId="mydmoveblockw" width="35" />
+					<item type="textbox" defaultValue="00 00 00 00" tooltip="Data to be written (4 bytes in hex)" label="Data:" uniqueId="mydmovedata" width="80" />				
+					<item type="label" label="BE EXTREMELY CAREFUL WRITING my-d move SPECIAL BLOCKS !!! 
+					WRITING UNWANTED VALUES TO WRONG BLOCKS MAY BRING TO IRREVERSIBLE TAG CHANGES !!! 
+					PLEASE REFERE TO THE SPECIFIC PRODUCT DATASHEET FOR MORE INFO !!!" />	
+						<item type="button" label="     _     " text="WRITE BLOCK" tooltip="Press button to read the selected block" action0="hf 14a raw -c -s A2 $mydmoveblockw $mydmovedata" />
+						<item type="label" label="answer for correct writing is -0A- (ACK); answer for incorrect writing is -00- (NAK)
+					--------------------------------------------------------------------------------------" />	
+			</section>			
+			
+		</section>	
+
+
+	<section title="Innovision/Broadcom" tooltip="Innovision Specific Functions/Commands/Tools (Jewel/Topaz)" >	
+
+		<section title="Jewel/Topaz" tooltip="Jewer/Topaz Specific Functions/Commands/Tools" >		
+		
+			<section title="SNOOP" tooltip="Eavesdrop Jewel/Topaz Communication" uniqueId="topazsn" >
+				<item type="button" text="SNOOP" tooltip="Press to eavesdrop communication; snooped data will make PM3 green led to turn on; press PM3 button 1 time to stop snooping" action0="hf topaz snoop" />
+			</section> 	
+
+			<section title="LIST" tooltip="Eavesdrop Jewel/Topaz Communication" uniqueId="topazlst" >
+			<item type="checkbox" valueChecked="f" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, also shows frame delay times" uniqueId="topazf" text="Check to also shows frame delay times"/>	
+			<item type="checkbox" valueChecked="c" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, put CRCs between [crc]" uniqueId="topazc" text="Check to put CRCs between [crc]"/>	
+			<item type="button" text="LIST" tooltip="Press to read Jewel/Topaz history" action0="hf list topaz $topazf $topazc" />
+			</section> 	
+		
+			<section title="Jewel/Topaz Help" tooltip="Help command shows Jewel/Topaz subcategory available commands" uniqueId="14atopaz" >
+				<item type="button" text="HELP" tooltip="Press to obtain the Help info" action0="hf topaz help" />
+			</section> 
+		
+		</section>
+	
+	</section>
+
+
+		
+	<section title="NXP/PHILIPS" tooltip="Philips/NXP Specific Functions/Commands/Tools" >	
+		
+		<section title="MIFARE (Originals/Clones/Chinese)" tooltip="MiFare Specific Functions/Commands/Tools" >	
+
+			<section title="Classic Tags" tooltip="MiFare MINI, Classic(1K), 2K, 4K">	
+				<section title="Read Block" tooltip="Read Block of a Standard Mifare Card" uniqueId="mfrdsc">
+					<item type="drop-down" defaultValue="" values="0:63" tooltip="Block number to read. Value between 0 and 63" uniqueId="mfblkn" label="Block Number:" width="40" />
+					<item type="drop-down" defaultValue="" values="A,B" tooltip="Key to USE. 'A'=Use KeyA, 'B'=Use KeyB" uniqueId="mfkey" label="Key to Use:" width="30" />	
+					<item type="textbox" defaultValue="FFFFFFFFFFFF" tooltip="Key value (12 hex characters)" uniqueId="mfkeyvalue" label="Key Value:"/>				
+					<item type="button" text="READ BLOCK" tooltip="Press to read selected block" action0="hf mf rdbl $mfblkn $mfkey $mfkeyvalue" />
+					<item type="label" label="
+						-------------------------------------------------------------					
+						Command execution example:
+						
+						proxmark3> hf mf rdbl 4 B FFFFFFFFFFFF
+						--block no:04 key type:01 key:ff ff ff ff ff ff            
+						#db# READ BLOCK FINISHED                 
+						isOk:01 data:00 00 03 10 d1 01 0c 54 02 65 6e 32 32 32 32 32  
+						-------------------------------------------------------------" />						
+				</section>		
+				
+				<section title="Write Block" tooltip="Read a Standard Mifare Card Block" uniqueId="mfwrsc">
+					<item type="drop-down" defaultValue="" values="0:63" tooltip="Block number to write. Value between 0 and 63" uniqueId="mfblkn" label="Block Number; WARNING: blocks 3,7,11,15,19,23,27,31,35,39,43,47,51,55,59 and 63 contains keys and security !!!" width="40" />
+					<item type="drop-down" defaultValue="" values="A,B" tooltip="Key to USE. 'A'=Use KeyA, 'B'=Use KeyB" uniqueId="mfkey" label="Key to Use:" width="30" />	
+					<item type="textbox" defaultValue="FFFFFFFFFFFF" tooltip="Key value (12 hex characters)" uniqueId="mfkeyvalue" label="Key Value:"/>				
+					<item type="textbox" defaultValue="" tooltip="Data value (32 hex characters)" uniqueId="mfdata" label="Data to be written (ex. 000102030405060708090A0B0C0D0E0F):" width="215"/>					
+					<item type="button" text="WRITE BLOCK" tooltip="Press to write selected block" action0="hf mf wrbl $mfblkn $mfkey $mfkeyvalue $mfdata" />	
+					<item type="label" label="
+						-------------------------------------------------------------------------					
+						Command execution example:
+						
+						proxmark3> hf mf wrbl 24 B FFFFFFFFFFFF 00000000000000000000000000000000
+						--block no:18 key type:01 key:ff ff ff ff ff ff           
+						--data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00           
+						#db# WRITE BLOCK FINISHED                 
+isOk:01  
+						-------------------------------------------------------------------------" />					
+				</section>	
+				
+				<section title="Read Sector" tooltip="Read a Standard Mifare Cards Sector" uniqueId="mfrdblk">
+					<item type="drop-down" defaultValue="" values="0:15" tooltip="Sector number to read. Value between 0 and 15" uniqueId="mfscn" label="Block Number:" width="40" />
+					<item type="drop-down" defaultValue="" values="A,B" tooltip="Key to USE. 'A'=Use KeyA, 'B'=Use KeyB" uniqueId="mfkey" label="Key to Use:" width="30" />	
+					<item type="textbox" defaultValue="FFFFFFFFFFFF" tooltip="Key value (12 hex characters)" uniqueId="mfkeyvalue" label="Key Value:"/>					
+					<item type="button" text="READ SECTOR" tooltip="Press to read selected block" action0="hf mf rdsc $mfscn $mfkey $mfkeyvalue" />	
+					<item type="label" label="
+						-----------------------------------------------------	
+						Command execution example:
+						
+						proxmark3> hf mf rdsc 15 B FFFFFFFFFFFF
+						--sector no:0f key type:01 key:ff ff ff ff ff ff            
+						#db# READ SECTOR FINISHED                 
+						isOk:01          
+						data:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00           
+						data:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00           
+						data:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00           
+						data:00 00 00 00 00 00 7f 07 88 40 00 00 00 00 00 00       
+						-----------------------------------------------------" />					
+				</section>		
+
+				<section title="Hacks" tooltip="Mifare Hacking Tools">
+				
+					<section title="Test Block Keys" tooltip="Test a Standard Mifare Cards with Default/Common/Known Keys" uniqueId="tstmf">
+						<item type="drop-down" defaultValue="*" values="0:255" tooltip="Block number to test. Value between 0 and 63 for 1k, between 0 and 255 for 4k; '*'=All" uniqueId="blktestn" label="Block Number:"  width="40"/>
+						<item type="drop-down" defaultValue="?" values="?,A,B" tooltip="Key to USE. '?'=Both 'A'=Use KeyA, 'B'=Use KeyB" uniqueId="mfkey" label="Key to Use:"  width="30"/>	
+						<item type="textbox" defaultValue="" tooltip="Key value to test (12 hex characters)" uniqueId="mfkeyvaluetest" label="Key to Test (leave blank if unknown):"/>					
+						<item type="textbox" defaultValue="" tooltip="Write dictionary files name (.dic)" uniqueId="mfkeydictest" label="Write down dictionary file name (.dic) (leave blank if not available):"/>	
+						<item type="checkbox" valueChecked="d" valueUnchecked="" defaultValue="unchecked" tooltip="If checked found keys will be dumped to dumpkeys.bin" uniqueId="dumpk" label="Dump keys to dumpkeys.bin" />						
+						<item type="button" text="TEST KEYS" tooltip="Press button to test keys: use ANY key found by this method with 'nested attack' to retrieve other sector keys!" action0="hf mf chk $blktestn $mfkey $mfkeyvaluetest $mfkeydictest $dumpk" label="Hit below button and wait!"/>	
+					</section>				
+				
+					<section title="DARKSIDE ATTACK" tooltip="Read Tag Parity Error to retrieve Keys" uniqueId="darkside">
+						<item type="textbox" defaultValue="" tooltip="Nt found by previous darkside command run" uniqueId="mfnt" label="Nt from previous darkside command (leave blank if unknown):"/>									
+						<item type="button" text="START DARKSIDE ATTACK" tooltip="Press button to start darkside attack: use ANY key found by this method with 'nested attack' to retrieve other sector keys!" action0="hf mf mifare $mfnt" label="This function try to extract Mifare Classic Keys; hit below button and WAIT! Press PM3 button to abort !" />								
+					</section>	
+
+					<section title="NESTED ATTACK" tooltip="Test a Standard Mifare Cards with nested authentication" uniqueId="nested">
+						<item type="drop-down" defaultValue="1" values="1,2,3,4" tooltip="Card Type; '0'=MINI, '1'=1K, '2'=U2K, '4'=4K, 'any other value'=1K" uniqueId="mftype" label="Mifare Tag Type:" width="30"/>	
+						<item type="drop-down" defaultValue="0" values="0:63" tooltip="Block number to test. Value between 0 and 63" uniqueId="mfblkn" label="Block Number:"  width="40"/>
+						<item type="drop-down" defaultValue="A" values="A,B" tooltip="Key to Use; 'A'=Use KeyA, 'B'=Use KeyB" uniqueId="mfkey" label="Key to Test:"  width="30"/>	
+						<item type="textbox" defaultValue="" tooltip="Key value to test (found with 'DARKSIDE ATTACK' or with 'Test Block Keys')" uniqueId="mfkeyvaluetest" label="Key Value (found with 'DARKSIDE ATTACK' or with 'Test Block Keys'):" width="90" />					
+						<item type="drop-down" defaultValue="" values="0:63" tooltip="Block number to test. Value between 0 and 63" uniqueId="mfblkntarget" label="Target Block Number (optional - leave blank if unknown):"  width="40"/>
+						<item type="drop-down" defaultValue="" values="A,B" tooltip="Key to Use; 'A'=Use KeyA, 'B'=Use KeyB" uniqueId="mfkeytarget" label="Target Key (optional - leave blank if unknown):"  width="30"/>	
+						<item type="drop-down" defaultValue="" values=" ,t,d" tooltip="'t'=transfer keys into emulator memory, 'd'=write keys to binary file (dumpkyes.bin)" uniqueId="mfwheredump" label="Select where to copy keys (optional - leave blank if none):"  width="30"/>	
+						<item type="button" text="START NESTED ATTACK" tooltip="After hitting the button, wait and see if other keys can be recovered!" action0="hf mf nested $mftype $mfblkn $mfkey $mfkeyvaluetest $mfblkntarget $mfkeytarget $mfwheredump" label="Hit below button and wait!"/>	
+					</section>		
+
+					<section title="SCRIPT - Automatic Mifare Crack" tooltip="Crack Mifare Classic with an automatic script" uniqueId="crkmfsc">
+						<item type="label" label="This script uses:
+						- darkside attack to find a key;
+						- then nested attack to find other keys;
+						- finally dumps entire memory and converts it in .eml (needed for simulator) and .html
+						(files will be saved in client folder)"/>		
+						<item type="label" label="
+						"/>							
+						<item type="button" text="LAUNCH CRACK MIFARE SCRIPT" tooltip="Press button to automatically crack a mifare card using a .lua script" action0="script run mifare_autopwn" label="" />								
+						<item type="label" label="--------------------------------------"/>							
+						<item type="button" text="STOP SCRIPT" tooltip="Press button to abort script execution" action0="s" label="(to stop execution press below button)" />														
+					</section>					
+
+					<section title="Dump Mifare Classic" tooltip="Dump Mifare Classic Blocks" uniqueId="dmpmf">
+					<item type="drop-down" defaultValue="1" values="0,1,2,4" tooltip="Tag Memory Size" uniqueId="mftsize" label="Memory Size (Kb):"  width="30"/>		
+					<item type="button" text="DUMP MIFARE" tooltip="Press button to dump Mifare contents to a file" action0="hf mf dump $mftsize" label="This function need a DUMPKEYS.BIN file with correct tag/card keys to work! (see 'nested attack')" />								
+					</section>
+					
+					<section title="Restore Mifare Classic" tooltip="Restore Mifare Classic Blocks" uniqueId="rstmf">
+					<item type="drop-down" defaultValue="1" values="0,1,2,4" tooltip="Tag Memory Size" uniqueId="mftsize" label="Memory Size (Kb):"  width="30"/>		
+					<item type="button" text="RESTORE MIFARE" tooltip="Press button to restore Mifare contents from a file" action0="hf mf restore $mftsize" label="This function need DUMPDATA.BIN (see 'nested attack')" />								
+					</section>				
+
+					<section title="Sniff" tooltip="Sniff Card-Reader Communication" uniqueId="mfsniff">
+					<item type="button" text="START SNIFFING" tooltip="Press button to sniff communication" action0="hf mf sniff" />								
+					</section>
+					
+					<section title="SIMULATOR">
+						<section title="Simulate" tooltip="Simulate MIFARE Card" uniqueId="mfsim">
+							<item type="button" text="HELP" tooltip="Press button to see help information" action0="hf mf sim h" />														
+							<item type="label" label="--------------------------------------"/>	
+							<item type="checkbox" valueChecked="u" valueUnchecked="" defaultValue="unchecked" tooltip="activate specific UID simulation" uniqueId="mfuidyes" text="Enable specific UID (optional) [enter UID value in the field below]" />
+							<item type="textbox" defaultValue="" tooltip="UID value to simulate - If not specified, the UID from emulator memory will be used" uniqueId="mfuid" label="Write here the specific UID [8 or 14 HEX symbols]:" width="100"/>						
+						<item type="label" label="--------------------------------------"/>								
+							<item type="checkbox" valueChecked="n" valueUnchecked="" defaultValue="unchecked" tooltip="activate exit simulation after -n- blocks read" uniqueId="mfnexityes" text="Enable exit after -n- blocks read (optional) [enter value below]" />
+							<item type="textbox" defaultValue="" tooltip="Automatically exit simulation after -numreads- blocks have been read by reader; 0 = infinite" uniqueId="mfautoexit" label="Write -n- value here:" width="35"/>						
+						<item type="label" label="--------------------------------------"/>								
+							<item type="checkbox" valueChecked="i" valueUnchecked="" defaultValue="unchecked" tooltip="means that console will not be returned until simulation finishes or is aborted" uniqueId="mfint" text="Interactive (optional)" />							
+						<item type="label" label="--------------------------------------"/>															
+							<item type="checkbox" valueChecked="x" valueUnchecked="" defaultValue="unchecked" tooltip="cracks, performs the 'reader attack', nr/ar attack against a legitimate reader, fishes out the key(s)" uniqueId="mfcrk" text="Crack (optional)" />													
+						<item type="label" label="--------------------------------------"/>															
+							<item type="button" text="SIMULATE" tooltip="Press button to simulate MIFARE card - Press PM3 button to stop simulation!" action0="hf mf sim $mfuidyes $mfuid $mfnexityes $mfautoexit $mfint $mfcrk" />								
+						</section>	
+						<section title="Clear Simulator" tooltip="Clear Simulator Memory Block" uniqueId="mfeclr">
+							<item type="button" text="CLEAR" tooltip="Press button to clear simulator memory block" action0="hf mf eclr" />								
+						</section>		
+						<section title="Get Memory Block" tooltip="Get Simulator Memory Block" uniqueId="mfeget">
+							<item type="drop-down" defaultValue="0" values="0:63" tooltip="Block number to get. Value between 0 and 63" uniqueId="mfegetv" label="Block Number to Get:" width="40" />					
+							<item type="button" text="GET BLOCK" tooltip="Press button to clear simulator memory block" action0="hf mf eget $mfegetv" />								
+						</section>			
+						<section title="Set Memory Block" tooltip="Set Simulator Memory Block" uniqueId="mfeset">
+							<item type="drop-down" defaultValue="0" values="0:63" tooltip="Block number to get. Value between 0 and 63" uniqueId="mfegetv" label="Block Number to Set:"  width="30"/>	
+							<item type="textbox" defaultValue="" tooltip="Data value (32 hex characters)" uniqueId="mfsetdata" label="Data to be written (ex. 000102030405060708090A0B0C0D0E0F):" width="210"/>											
+							<item type="button" text="SET BLOCK" tooltip="Press button to clear simulator memory block" action0="hf mf eset $mfegetv $mfsetdata" />								
+						</section>
+						<section title="SCRIPT - Convert dumpdata.bin to .eml" tooltip="This script takes a dumpfile from 'hf mf dump' and converts it to a format that can be used by the emulator" uniqueId="bin2eml">
+							<item type="checkbox" valueChecked="-i" valueUnchecked="" defaultValue="unchecked" tooltip="If checked you MUST specify the dump-file (.bin input) in the field below. If omitted, 'dumpdata.bin' is used" uniqueId="bin2emlbinfile" text="check to specify .bin filename below-If none 'dumpdata.bin' is used" />							
+							<item type="textbox" defaultValue="" tooltip="File name to load (.bin) - If omitted, 'dumpdata.bin' is used" uniqueId="binfile" label="Input .bin file (fill ONLY if above field is checked):" width="210" />											
+							<item type="label" label="
+							" />							
+							<item type="checkbox" valueChecked="-o" valueUnchecked="" defaultValue="unchecked" tooltip="If checked you MUST specify the dump-file (.eml output) in the filed below. If omitted, uid.eml is used" uniqueId="bin2emlemlfile" text="check to specify .eml filename below-If none 'uid.eml' is used" />							
+							<item type="textbox" defaultValue="" tooltip="File name to save (.eml) - If omitted, 'uid.eml' is used" uniqueId="emlfile" label="Output .eml file (fill ONLY if above field is checked):" width="210" />											
+							<item type="label" label="
+							" />	
+							<item type="button" text="CONVERT .bin TO .eml" tooltip="Press button to convert .bin dump file to .eml" action0="script run dumptoemul.lua $bin2emlbinfile $binfile $bin2emlemlfile $emlfile" />								
+							<item type="label" label="(file will be saved in client folder)
+							-----------------------------------------------------------" />	
+							<item type="button" text="Script Help" tooltip="Press button to obtain the script help info" action0="script run dumptoemul.lua -h" />															
+						</section>
+
+
+						<section title="SCRIPT - Convert dumpdata.eml to .html" tooltip="This script takes a dumpfile on EML (ASCII) format and produces a html based dump, which is a bit more easily analyzed" uniqueId="eml2html">
+							<item type="checkbox" valueChecked="-i" valueUnchecked="" defaultValue="unchecked" tooltip="If checked you MUST specify the dump-file (.eml input) in the field below. If omitted, 'dumpdata.eml' is used" uniqueId="emlcheck" text="check to specify .eml filename below-If none 'dumpdata.eml' is used" />
+							<item type="textbox" defaultValue="" tooltip="File name to load (.eml) - If omitted, 'dumpdata.eml' is used" uniqueId="emlfile" label="Input .eml file (fill ONLY if above field is checked):" width="210" />											
+							<item type="label" label="
+							" />	
+							<item type="checkbox" valueChecked="-o" valueUnchecked="" defaultValue="unchecked" tooltip="If checked you MUST specify the html-file (.html output) in the filed below. If omitted, -currentdate-.html is used" uniqueId="htmlcheck" text="check to specify .html filename below-If none '-currentdate-.html' is used" />														
+							<item type="textbox" defaultValue="" tooltip="File name to save (.html) - If omitted, '-currentdate-.html' is used" uniqueId="htmlfile" label="Output .html file (fill ONLY if above field is checked):" width="210" />											
+							<item type="label" label="
+							" />	
+							<item type="button" text="CONVERT .eml TO .html" tooltip="Press button to convert .eml file to .html" action0="script run emul2html.lua $emlcheck $emlfile $htmlcheck $htmlfile" />								
+							<item type="label" label="(file will be saved in client folder)
+							-----------------------------------------------------------" />	
+							<item type="button" text="Script Help" tooltip="Press button to obtain the script help info" action0="script run emul2html.lua -h" />															
+						</section>							
+
+						<section title="SCRIPT - Convert dumpdata.eml to .bin" tooltip="This script takes an dumpfile on EML (ASCII) format and converts it to the PM3 dumpbin file to be used with -hf mf restore-" uniqueId="eml2dump">
+							<item type="checkbox" valueChecked="-i" valueUnchecked="" defaultValue="unchecked" tooltip="If checked you MUST specify the dump-file (.eml input) in the field below. If omitted, 'dumpdata.eml' is used" uniqueId="emlcheck" text="check to specify .eml filename below-If none 'dumpdata.eml' is used" />
+							<item type="textbox" defaultValue="" tooltip="File name to load (.eml) - If omitted, 'dumpdata.eml' is used" uniqueId="emlfile" label="Input .eml file (fill ONLY if above field is checked):" width="210" />											
+							<item type="label" label="
+							" />	
+							<item type="checkbox" valueChecked="-o" valueUnchecked="" defaultValue="unchecked" tooltip="If checked you MUST specify the bin-file (.bin output) in the filed below. If omitted, -currentdate-.bin is used" uniqueId="bincheck" text="check to specify .bin filename below-If none '-currentdate-.bin' is used" />														
+							<item type="textbox" defaultValue="" tooltip="File name to save (.bin) - If omitted, '-currentdate-.bin' is used" uniqueId="binfile" label="Output .bin file (fill ONLY if above field is checked):" width="210" />											
+							<item type="label" label="
+							" />	
+							<item type="button" text="CONVERT .eml TO .bin" tooltip="Press button to convert .eml file to .bin" action0="script run emul2dump.lua $emlcheck $emlfile $bincheck $binfile" />								
+							<item type="label" label="(file will be saved in client folder)
+							-----------------------------------------------------------" />	
+							<item type="button" text="Script Help" tooltip="Press button to obtain the script help info" action0="script run emul2html.lua -h" />															
+										
+						</section>							
+					
+						<section title="Load  (.eml)" tooltip="Load From File Emulator Dump" uniqueId="mfeload">
+							<item type="textbox" label="Dump File Name:" defaultValue="" tooltip="Dump File Name" uniqueId="mfeloadfile" width="100" />
+							<item type="button" text="LOAD FROM FILE" tooltip="Press button to load dump from file" action0="hf mf eload $mfeloadfile" />								
+						</section>						
+						<section title="Save To File (.eml)" tooltip="Save To File Emulator Dump (.eml)" uniqueId="mfesave">
+							<item type="textbox" label="Dump File Name:" defaultValue="" tooltip="Type Dump File Name (.eml) to save:" uniqueId="mfeloadfile" width="100" />					
+							<item type="button" text="SAVE TO FILE" tooltip="Press button to save dump to file" action0="hf mf esave $mfeloadfile" />								
+						</section>		
+						<section title="Fill Simulator Memory" tooltip="Fill Simulator Memory With Key From Card Emulator Memory" uniqueId="mfecfil">
+							<item type="drop-down" defaultValue="A" values="A,B" tooltip="Key to Transfer; 'A'=Transfer KeyA, 'B'=Transfer KeyB" uniqueId="mfkey" label="Key to Transfer:"  width="30"/>		
+							<item type="drop-down" defaultValue="1" values="0,1,2,4" tooltip="Tag Memory Size" uniqueId="mftsize" label="Memory Size (Kb):"  width="30"/>		
+							<item type="button" text="TRANSFER DATA" tooltip="Press button to transfer keys from cards emulator memory" action0="hf mf ecfill $mfkey $mftsize" />			
+						</section>						
+						<section title="Print Keys" tooltip="Print Keys From Simulator Memory" uniqueId="mfekeyprn">
+							<item type="button" text="PRINT KEYS" tooltip="Press button to print keys form simulator memory" action0="hf mf ekeyprn" />								
+						</section>	
+					</section>	
+				</section>		
+				
+			</section>	
+		
+		
+			<section title="1K Chinese Cangeable UID Cards" tooltip="Commands for Special Chinese Card: those Cards have re-writable Sector0-Block0/UID">
+			
+				<section title="Write UID" tooltip="Write UID into Special Chinese Cards" uniqueId="chinsetuid">
+					<item type="textbox" defaultValue="" tooltip="UID value to Write (Works only with Chinase Special Cards)" uniqueId="ChinUID" label="UID (8 hex values; ex. 01020304):"  width="60"/>
+					<item type="textbox" defaultValue="" tooltip="Specify ATQA value (optional)" uniqueId="catqa" label="ATQA (4 hex values; ex. 0004):"  width="40"/>
+					<item type="textbox" defaultValue="" tooltip="Specify SAK value (optional)" uniqueId="csak" label="SAK (2 hex values; ex. 08):"  width="30"/>
+					<item type="checkbox" valueChecked="-w" valueUnchecked="" defaultValue="unchecked" tooltip="Wipe card before write" uniqueId="wipe" text="(Optional) Wipe card before write"/>			
+					<item type="button" text="WRITE UID" tooltip="Press button to write UID into Chinese Card" action0="hf mf csetuid $ChinUID $catqa $csak $wipe" />				
+				</section>
+				
+				<section title="Read Block" tooltip="Read Block of a Special Chinese Cards" uniqueId="chinrdsc">
+					<item type="drop-down" defaultValue="" values="0:63" tooltip="Block number to read. Value between 0 and 63" uniqueId="chnblkn" label="Block Number:" width="40" />			
+					<item type="button" text="READ BLOCK" tooltip="Press button to read selected block" action0="hf mf cgetblk $chnblkn" />				
+				</section>	
+
+				<section title="Write Block" tooltip="Write Block of a Special Chinese Cards" uniqueId="chinwrtblk">
+					<item type="drop-down" defaultValue="" values="0:63" tooltip="Block number to write. Value between 0 and 63" uniqueId="chnblkn" label="Block Number" width="40" />			
+					<item type="textbox" defaultValue="" tooltip="Hex value to Write (32 hex values)" uniqueId="blkhex" label="Data to write (32 hex values; ex. 01020304050607080910111213141516):"  width="210"/>
+					<item type="checkbox" valueChecked="-w" valueUnchecked="" defaultValue="unchecked" tooltip="Wipe card before write" uniqueId="wipe" text="(Optional) Wipe card before write"/>			
+					<item type="button" text="WRITE BLOCK" tooltip="Press button to write selected block" action0="hf mf csetblk $chnblkn $blkhex $wipe" />				
+				</section>	
+				
+				<section title="Read Sector" tooltip="Read Sector of a Special Chinese Cards" uniqueId="chinrdblk">
+					<item type="drop-down" defaultValue="" values="0:15" tooltip="Sector number to read. Value between 0 and 15" uniqueId="chnscn" label="Sector Number:" width="40"/>			
+					<item type="button" text="READ SECTOR" tooltip="Press button to read selected sector" action0="hf mf cgetsc $chnscn" />				
+				</section>		
+
+				<section title="Load Dump" tooltip="Load Dump of a Special Chinese Cards" uniqueId="chinload">
+					<item type="checkbox" valueChecked="e" valueUnchecked="" defaultValue="" tooltip="Check to load from emulator memory" uniqueId="modeTextboxChnload" label="Load From Emulator Memory:"/>
+					<item type="textbox" label="Dump File Name:" defaultValue="" tooltip="Type the dump file name (.eml) to load" uniqueId="mfchneloadfile" width="100" />			
+					<item type="button" text="LOAD DUMP" tooltip="Press button to load dump" action0="hf mf cload $modeTextboxChnload $mfchneloadfile" />				
+				</section>	
+				
+				<section title="Save Dump" tooltip="Save Dump of a Special Chinese Cards" uniqueId="chinsav">
+					<item type="checkbox" valueChecked="e" valueUnchecked="" defaultValue="" tooltip="Check to save to emulator memory" uniqueId="modeTextboxChnsave" label="Save To Emulator Memory:"/>
+					<item type="textbox" label="Dump File Name:" defaultValue="" tooltip="Type the dump file name (.eml) to save" uniqueId="mfchneloadfile" width="100" />			
+					<item type="button" text="SAVE DUMP" tooltip="Press button to save dump" action0="hf mf csave $modeTextboxChnsave $mfchneloadfile" />				
+				</section>
+				
+				<section title="Restore Corrupted Sector0Block0" tooltip="Restore Mifare Changeable UID cards when card is no more recognized by reader" uniqueId="chinrestore">
+					<item type="button" text="RESTORE" tooltip="Restore Changeable UID cards when card is no more recognized by reader due to wrong bytes written at Sector0Block0" action0="hf 14a raw -p -a -b 7 40" waitFor0="proxmark3>" action1="hf 14a raw -p -a 43" waitFor1="proxmark3>" action2="hf 14a raw -c -p -a A000" waitFor2="proxmark3>" action3="hf 14a raw -c -p -a 01 02 03 04 04 98 02 00 00 00 00 00 00 00 10 01" waitFor3="proxmark3>" action4="hf 14a raw -c -a 3000" waitFor4="proxmark3>" action5="hf 14a raw -c -a 5000" />				
+						<item type="label" label="
+						This little script put the card in -special mode-, then writes correct bytes to Sector0Block0, 
+						reads them back [bytes written are: 01 02 03 04 04 98 02 00 00 00 00 00 00 00 10 01] and finally 
+						send an -halt- command; this way card's new UID will be: 01 02 03 04].
+						-------------------------------------------------------------------------------------------------" />							
+				</section>					
+			</section>
+			
+			
+			<section title="Ultralight / Ultralight Chinese Chanegeable UID" tooltip="Chip MF0ICU1">
+			
+				<section title="Card Info" tooltip="Read Card Information" uniqueId="mfuinfo">
+					<item type="button" text="READ CARD INFO" tooltip="Press button to read Mifare Ultralight information)" action0="hf mfu info" />				
+					<item type="label" label="
+						Command execution example:
+						
+						----------------------------------------------------------------------					
+						-- Mifare Ultralight / Ultralight-C Tag Information ---------          
+						-------------------------------------------------------------          
+						MANUFACTURER : NXP Semiconductors Germany          
+								 UID : 04 01 02 05 06 07 08            
+								BCC0 : 8f - Ok          
+								BCC1 : 0c - Ok          
+							Internal : 00            
+								Lock : 00 00  - 0000000000000000          
+						  OneTimePad : 00 00 00 00  
+						----------------------------------------------------------------------" />			
+				</section>					
+			
+				<section title="Read Block" tooltip="Read Mifare Ultralight Block" uniqueId="mfurdsc">
+					<item type="drop-down" defaultValue="" values="0:15" tooltip="Block number to read. Value between 0 and 15" uniqueId="mfurdb" label="Block Number:" width="40" />			
+					<item type="button" text="READ BLOCK" tooltip="Press button to read selected block" action0="hf mfu rdbl $mfurdb" />	
+					<item type="label" label="
+						--------------------------					
+						Command execution example:
+						
+						proxmark3> hf mfu rdbl 15
+						--block no:0f          
+						isOk:01 data:53 10 fa 23  
+						--------------------------" />					
+				</section>	
+
+				<section title="Write Block" tooltip="Write Mifare Ultralight Block" uniqueId="mfuwrtblk">
+					<item type="drop-down" defaultValue="" values="0:15" tooltip="Block number to write. Value between 0 and 15" uniqueId="mfuwblk" label="Block Number" width="40" />			
+					<item type="textbox" defaultValue="" tooltip="Hex value to Write (8 hex values)" uniqueId="blkuhex" label="Data to write (8 hex values; ex. 01020304):"  width="60"/>
+					<item type="checkbox" valueChecked="w" valueUnchecked="" defaultValue="" tooltip="chinese card force write on blocks0-2" uniqueId="uchuid" label="Force write on chinese cards blocks0-2:"/>					
+					<item type="button" text="WRITE BLOCK" tooltip="Press button to write selected block" action0="hf mfu wrbl $mfuwblk $blkuhex $uchuid" />	
+					<item type="label" label="
+						-----------------------------------					
+						Command execution example:
+						
+						proxmark3> hf mfu wrbl 15 5310fa22
+						--block no:0f          
+						--data: 53 10 fa 22           
+						isOk:01          
+						-----------------------------------" />							
+				</section>	
+				
+				<section title="Read C Block" tooltip="Read Mifare Ultralight C Block" uniqueId="mfurdcsc">
+					<item type="drop-down" defaultValue="" values="0:44" tooltip="Block number to read. Value between 0 and 44" uniqueId="mfucrdb" label="Block Number:" width="40" />			
+					<item type="button" text="READ BLOCK" tooltip="Press button to read selected block" action0="hf mfu crdbl $mfucrdb" />	
+					<item type="label" label="
+						--------------------------					
+						Command execution example:
+						
+						proxmark3> hf mfu crdbl 15
+						--block no:0f          
+						isOk:01 data:15 15 15 15  
+						--------------------------" />					
+				</section>	
+
+				<section title="Write C Block" tooltip="Write Mifare Ultralight C Block" uniqueId="mfuwrctblk">
+					<item type="drop-down" defaultValue="" values="0:44" tooltip="Block number to write. Value between 0 and 44" uniqueId="mfucwblk" label="Block Number" width="40" />			
+					<item type="textbox" defaultValue="" tooltip="Hex value to Write (8 hex values)" uniqueId="blkuchex" label="Data to write (8 hex values; ex. 01020304):"  width="60"/>
+					<item type="checkbox" valueChecked="w" valueUnchecked="" defaultValue="" tooltip="chinese card force write on blocks0-2" uniqueId="ucchuid" label="Force write on chinese cards blocks0-2:"/>					
+					<item type="button" text="WRITE BLOCK" tooltip="Press button to write selected block" action0="hf mfu cwrbl $mfucwblk $blkuchex $ucchuid" />	
+					<item type="label" label="
+						-----------------------------------					
+						Command execution example:
+						
+						proxmark3> hf mfu cwrbl 15 15151515
+						--block no:0f          
+						--data: 15 15 15 15           
+						isOk:01          
+						-----------------------------------" />							
+				</section>			
+
+				<section title="Try C Authentication" tooltip="Try an Ultralight C Authentication" uniqueId="mfucauth">
+					<item type="drop-down" defaultValue="" values="1:2" tooltip="Key to use. Value between 1 and 2" uniqueId="mfuctryauth" label="Key Number:" width="30" />			
+					<item type="button" text="TRY AUTHENTICATION" tooltip="Press button to try to authenticate" action0="hf mfu cauth $mfuctryauth" />	
+					<item type="label" label="
+						--------------------------					
+						Command execution example:
+						
+						proxmark3> hf mfu cauth 0
+						enc(RndB):20 81 9e d8 0d 88 a4 79           
+							 RndB:ce 72 83 84 90 a0 05 30           
+							 RndA:6e b6 4f e9 b9 ba d3 1f           
+							 RA+B:6e b6 4f e9 b9 ba d3 1f 72 83 84 90 a0 05 30 ce           
+						enc(RA+B):11 51 fd 91 98 9a f4 96 82 c5 e9 6e 7d 4b 0c 92           
+						enc(RndA'):10 ca c7 89 3a fb 5e 82   
+						--------------------------" />					
+				</section>					
+				
+				<section title="Dump Card" tooltip="Read all content of a Mifare Ultralight / Ultralight C Card and save it to a file" uniqueId="mfurall">
+					<item type="checkbox" valueChecked="c" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, Ultralight C will be dumped, if not, Ultralight will be dumped" uniqueId="ucckeck" text="Dump Ultralight C"/>				
+					<item type="browse-save" label="Select or Type File Name:" defaultValue="" tooltip="Type the path/name of the saved file or press browse button to select it" uniqueId="mfufilensave" width="300" />									
+					<item type="button" text="DUMP ALL BLOCKS" tooltip="Press button to read all Mifare Ultralight content and save it to a file" action0="hf mfu dump $ucckeck $mfufilensave" />				
+					<item type="label" label="
+						----------------------------------------------------------------------					
+						This function dumps all 15 Mifare Ultralight blocks with a pagelock
+						indicator at the end of each block (between []); 1=locked 0=unlocked;
+						The dump file will be: (UID).bin
+				
+						Command execution example:
+						
+						proxmark3> hf mf urdcard
+						Dumping Ultralight Card Data...           
+						Block 00:04 34 ba 02            
+						Block 01:f1 dd 25 80            
+						Block 02:89 48 00 80            
+						Block 03:00 00 00 00  [0]          
+						Block 04:ff ff ff ff  [0]          
+						Block 05:00 00 00 00  [0]          
+						Block 06:00 00 00 00  [0]          
+						Block 07:00 00 00 00  [0]          
+						Block 08:00 00 00 00  [0]          
+						Block 09:00 00 00 00  [0]          
+						Block 0a:00 00 00 00  [0]          
+						Block 0b:00 00 00 00  [0]          
+						Block 0c:45 5d 9d cc  [0]          
+						Block 0d:5b 7e d2 f3  [0]          
+						Block 0e:78 93 a8 cc  [0]          
+						Block 0f:53 10 fa 22  [1]  
+						Dumped 16 pages, wrote 64 bytes to 04010205060708.bin  
+						----------------------------------------------------------------------" />			
+				</section>		
+
+				<section title="Restore Corrupted Block0-2" tooltip="Restore Ultralight Changeable UID cards when card gives errors (ex. CRC) on official readers/softwares" uniqueId="ulchinrestore">
+					<item type="button" text="RESTORE" tooltip="Restore Ultralight Changeable UID cards when card gives errors (ex. CRC) on official readers/softwares due to wrong bytes written at Block0-2" action0="hf mfu wrbl 0 0401028F w" waitFor0="isOk:01" action1="hf mfu wrbl 1 05060708 w" waitFor1="isOk:01" action2="hf mfu wrbl 2 0C000000 w" waitFor2="isOk:01" action3="hf mfu dump" />				
+						<item type="label" label="
+						This little script writes correct bytes to Sector0-2 and reads them back 
+						[bytes written are: 04 01 02 8F 05 06 07 08 0C 00 00 00]; this way card's 
+						new UID will be: 04 01 02 05 06 07 08 with correct BCC0 and BCC1].
+						
+						NOTES
+						If the command gives errors try to put the card at 0.5-1.0 cm form the antenna.
+						
+						04 = Manufacturer (NXP)
+						8F = 88 [CT] xor 04 xor 01 xor 02
+						0C = 05 xor 06 xor 07 xor 08
+						--------------------------------------------------------------------------------" />							
+				</section>		
+				
+				<section title="Debug Level" tooltip="Set Debug Level" uniqueId="mfudbglv">
+					<item type="drop-down" defaultValue="" values="0:4" tooltip="Set Debug Level between 0 and 4" uniqueId="mfudbg" label="Debug Level:" width="30" />			
+					<item type="button" text="SET CHOOSEN DEBUG LEVEL" tooltip="Press button to set the choosen debug level" action0="hf mfu dbg $mfudbg" />	
+					<item type="label" label="
+						--------------------------------------------------------------				
+						 0 - no debug messages          
+						 1 - error messages          
+						 2 - plus information messages          
+						 3 - plus debug messages          
+						 4 - print even debug messages in timing critical functions          
+							 Note: this option therefore may cause malfunction itself  
+						-------------------------------------------------------------" />					
+				</section>
+
+				<section title="Help" tooltip="Help command shows Mifare Ultralight/C subcategory available commands" uniqueId="mfuh" >
+				<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="hf mfu help" />
+				</section> 				
+				
+			</section>			
+
+										
+			
+			<section title="Debug Mode" uniqueId="mfdebug">			
+				<item type="drop-down" defaultValue="0" values="0,1,2,4" tooltip="Mode can be: '0'=no debug messages, '1'=error messages, '2'=all messages. '4'=extended debug mode " uniqueId="modeTextboxmf" label="Mode"  width="30"/>
+				<item type="button" text="SET DEBUG MODE" tooltip="Press button to set default debug mode" action0="hf mf dbg $modeTextboxmf" />				
+			</section>		
+			
+			<section title="Mifare Help" tooltip="Help command shows Mifare subcategory available commands" uniqueId="mfh" >
+				<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="hf mf help" />
+			</section> 
+
+		</section>		
+		
+			
+			<section title="NTAG203" tooltip="Manage NTAG203 tags" uniqueId="ntag203" >
+					<item type="textbox" defaultValue="" tooltip="Block number to read (from 00 to 29)" label="Block Number (00-29):" uniqueId="ntag203blockr" width="35" />
+					<item type="button" text="READ BLOCK" tooltip="Press button to read the selected block" action0="hf 14a raw -c -s 30 $ntag203blockr" />
+						<item type="label" label="READ BLOCK answer is 16bytes + 2bytes CRC (1st byte is 1st-selected-block byte - each 
+						block = 4bytes - if you select 29 you receive bytes form blocks 29, 00, 01 and 02)
+					--------------------------------------------------------------------------------------" />	
+					<item type="textbox" defaultValue="" tooltip="Block number to write (from 00 to 29)" label="Block Number (00-29):" uniqueId="ntag203blockw" width="35" />
+					<item type="textbox" defaultValue="00 00 00 00" tooltip="Data to be written (4 bytes in hex)" label="Data:" uniqueId="ntag203data" width="80" />				
+					<item type="label" label="BE EXTREMELY CAREFUL WRITING NTAG203 SPECIAL BLOCKS !!! 
+					WRITING UNWANTED VALUES TO WRONG BLOCKS MAY BRING TO IRREVERSIBLE TAG CHANGES !!! 
+					PLEASE REFERE TO THE SPECIFIC PRODUCT DATASHEET FOR MORE INFO !!!" />	
+						<item type="button" label="     _     " text="WRITE BLOCK" tooltip="Press button to read the selected block" action0="hf 14a raw -c -s A2 $ntag203blockw $ntag203data" />
+						<item type="label" label="answer for correct writing is -0A- (ACK); answer for incorrect writing is -00- (NAK)
+					--------------------------------------------------------------------------------------" />	
+			</section>
+			
+		</section>
+
+	
+	</section>
+
+			<section title="14443A Help" tooltip="Help command shows HF 14a subcategory available commands" uniqueId="14ah" >
+				<item type="button" text="HELP" tooltip="Press to obtain the Help info" action0="hf 14a help" />
+			</section> 
+	
+	</section>		
+	
+	
+	
+
+	<section title="ISO14443B" tooltip="Manage ISO14443B tags (ex. SRIX4K)">
+
+		<section title="14443B DEMODULATE" tooltip="Demodulate ISO14443B from tag" uniqueId="14bdemod" >
+			<item type="button" text="DEMODULATE" tooltip="Press button to demodulate ISO14443B from tag" action0="hf 14b demod" />
+		</section> 
+		
+		<section title="14443B LIST" tooltip="List ISO14443B History" uniqueId="14bhis" >
+			<item type="checkbox" valueChecked="f" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, also shows frame delay times" uniqueId="14bf" text="Check to also shows frame delay times"/>	
+			<item type="checkbox" valueChecked="c" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, put CRCs between [crc]" uniqueId="14bc" text="Check to put CRCs between [crc]"/>	
+
+			<item type="button" text="LIST" tooltip="Press button to read ISO14443B history" action0="hf list 14b $14bf $14bc" />
+		</section> 	
+		
+		<section title="14443B READ" tooltip="Read HF tag (ISO14443B)" uniqueId="14bread" >
+			<item type="button" text="READ" tooltip="Press button to read ISO14443B tag" action0="hf 14b read" />
+		</section> 	
+		
+		<section title="14443B SEND RAW COMMANDS" tooltip="Send raw commands to tag-card" uniqueId="14braw" >
+			<item type="checkbox" valueChecked="-r" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, PM3 will not read response from tag" uniqueId="14breadResponse" text="do not read response"/>
+			<item type="checkbox" valueChecked="-c" valueUnchecked="" defaultValue="checked" tooltip="If checked, PM3 will auto-calculate and append CRC to sent command" uniqueId="14bcalcCRC" text="auto-calculate and append CRC"/>
+			<item type="checkbox" valueChecked="-p" valueUnchecked="" defaultValue="checked" tooltip="If checked, PM3 will leave the antenna field on after receive (red led on)" uniqueId="14boptionsBox" text="leave the field on after receive"/>			
+			<item type="textbox" defaultValue="" tooltip="Hex data to be sent (ex. send 0B to get SRIX4k UID or 08 01 [the same as 0801] to read SRIX4K block 01)" uniqueId="14bdataTextbox" label="Data to be sent (in hex):" width="180"/>				
+			<item type="button" text="SEND RAW COMMAND" tooltip="Press button to Send Raw Command to tag/card" action0="hf 14b raw $14breadResponse $14bcalcCRC $14boptionsBox $14bdataTextbox" />
+						<item type="label" label="
+						Main ISO14443B Commands: 
+						05 00 00 = REQB (usage: 050000+2bytes ISO14443B-CRC - answer: 14bytes starting with -50-)
+					-------------------------------------------------------------------------------------------------------------" />	
+		</section>			
+		
+		<section title="14443B SIMULATE" tooltip="Simulate behaviour of an ISO14443B tag (clone)" uniqueId="14bsim" >
+			<item type="button" text="SIMULATE" tooltip="Press button to simulate an ISO14443B tag - Press PM3 button to stop simulation!" action0="hf 14b sim" />
+		</section> 
+		
+		<section title="14443B SIMULATE+GET" tooltip="Simulate and get samples as fake ISO14443B tag" uniqueId="14asimget" >
+			<item type="button" text="SIMULATE+GET" tooltip="Press button to simulate and get samples as fake ISO14443B tag" action0="hf 14b simlisten" />
+		</section> 
+	
+		<section title="14443B SNOOP" tooltip="Eavesdrop ISO14443 TypeB Communication" uniqueId="14bsn" >
+			<item type="button" text="SNOOP" tooltip="Press button to eavesdrop ISO14443B communication" action0="hf 14b snoop" />
+		</section> 		
+		
+		<section title="14443B TAGs" tooltip="Supported Tags" uniqueId="Btags" >
+		
+			<section title="ATMEL" tooltip="Manage ATMEL tags" uniqueId="att" >
+			
+				<section title="AT88SC0808CRF" tooltip="Manage AT88SC0808CRF tag" uniqueId="at88r" >
+					<item type="button" text="REQB" tooltip="Press button to send REQB command" action0="hf 14b raw -c -p 05 00 00" />
+						<item type="label" label="INITIATE answer is 1byte-Chip-ID + 2bytes CRC
+					--------------------------------------------------------------------------------------" />
+					
+				</section> 		
+			</section>	
+		
+			<section title="ST Microelectronics" tooltip="Manage ST Microelectronics tags" uniqueId="stt" >		
+		
+				<section title="SRI4K/SRIX4K" tooltip="Manage SRI4K/SRIX4K tags (-X- means Authenticate [0A] command is available)" uniqueId="srix4kr" >
+					<item type="button" text="INITIATE" tooltip="Press button to send Inventory command" action0="hf 14b raw -c -p 06 00" />
+					<item type="label" label="INITIATE answer is 1byte-Chip-ID + 2bytes CRC
+					--------------------------------------------------------------------------------------" />
+					<item type="textbox" defaultValue="" tooltip="Insert the 1byte-Chip-ID received from previous INITIATE command" uniqueId="srix4kuid" label="Chip-ID" width="30" />
+					<item type="button" text="SELECT" tooltip="Press button to select the previous-received 1byte-Chip-ID" action0="hf 14b raw -c -p 0E $srix4kuid" />
+					<item type="label" label="SELECT answer is 1byte-Chip-ID + 2bytes CRC
+					--------------------------------------------------------------------------------------" />
+					<item type="button" text="GET UID" tooltip="Press button to get tag UID" action0="hf 14b raw -c -p 0B" />
+					<item type="label" label="GET UID answer is 8byts-UID (LSB first) + 2bytes CRC
+					--------------------------------------------------------------------------------------" />	
+					<item type="textbox" defaultValue="00" tooltip="Block number to read (from 00 to 7F - FF for OTP_Lock_Reg block)" label="Block Number:" uniqueId="srix4krblock" width="25" />
+					<item type="button" text="READ BLOCK" tooltip="Press button to read the selected block" action0="hf 14b raw -c -p 08 $srix4krblock" />
+					<item type="label" label="READ BLOCK answer is 4bytes + 2bytes CRC
+					--------------------------------------------------------------------------------------" />	
+					<item type="button" text="READ ALL TAG BLOCKS" tooltip="Press button to read all SRIX4K blocks, OTP_Lock_Reg [FF] included" action0="hf 14b srix4kread" />
+					<item type="label" label="This is a PM3 command so it doesn't need INITIATE nor SELECT to be sent 
+					--------------------------------------------------------------------------------------" />
+					<item type="label" label="WRITE USING PM3 INTERNAL COMMAND" />
+					<item type="textbox" defaultValue="" tooltip="Block number to write (from 00 to 7F - FF for OTP_Lock_Reg block)" label="Block Number (00-7F):" uniqueId="srix4kpm3wblock" width="30" />
+					<item type="textbox" defaultValue="00 00 00 00" tooltip="Data to be written (4 bytes in hex)" label="Data:" uniqueId="srix4kpm3wdata" width="80" />				
+					<item type="label" label="BE EXTREMELY CAREFUL WRITING SRIX4K SPECIAL BLOCKS !!! 
+					WRITING UNWANTED VALUES TO WRONG BLOCKS MAY BRING TO IRREVERSIBLE TAG CHANGES !!! 
+					PLEASE REFERE TO THE SPECIFIC PRODUCT DATASHEET FOR MORE INFO !!!" />	
+					<item type="label" label="" />
+					<item type="button" text="WRITE BLOCK" tooltip="Press button to read the selected block" action0="hf 14b write 1 $srix4kpm3wblock $srix4kpm3wdata" />
+					<item type="label" label="There is no answer to this command except for a normal -CRC failed-
+					--------------------------------------------------------------------------------------" />						
+					<item type="label" label="WRITE USING RAW COMMANDS" />
+					<item type="textbox" defaultValue="" tooltip="Block number to write (from 00 to 7F - FF for OTP_Lock_Reg block)" label="Block Number (00-7F):" uniqueId="srix4kwblock" width="30" />
+					<item type="textbox" defaultValue="00 00 00 00" tooltip="Data to be written (4 bytes in hex)" label="Data:" uniqueId="srix4kwdata" width="80" />				
+					<item type="label" label="BE EXTREMELY CAREFUL WRITING SRIX4K SPECIAL BLOCKS !!! 
+					WRITING UNWANTED VALUES TO WRONG BLOCKS MAY BRING TO IRREVERSIBLE TAG CHANGES !!! 
+					PLEASE REFERE TO THE SPECIFIC PRODUCT DATASHEET FOR MORE INFO !!!" />	
+					<item type="label" label="" />
+					<item type="button" text="WRITE BLOCK" tooltip="Press button to read the selected block" action0="hf 14b raw -c -p 09 $srix4kwblock $srix4kwdata" />
+					<item type="label" label="There is no answer to this command except for a normal -CRC failed-
+					--------------------------------------------------------------------------------------" />	
+					<item type="button" text="RESET TO INVENTORY" tooltip="Press button to reset SRIX4K - After this command you can re-execute INITIATE" action0="hf 14b raw -c -p 0C" />
+					<item type="label" label="There is no answer to this command except for a normal -CRC failed- 
+					--------------------------------------------------------------------------------------" />		
+					<item type="button" text="COMPLETION" tooltip="Press button to temporarily deactivate SRIX4K - After this command you must remove the tag from magnetic filed and put it back again to re-send INITIATE" action0="hf 14b raw -c -p 0F" />
+					<item type="label" label="There is no answer to this command except for a normal -CRC failed- 
+					--------------------------------------------------------------------------------------" />		
+					<item type="textbox" defaultValue="00 00 00 00 00 00" tooltip="Data to be sent (6 bytes in hex)" label="Data:" uniqueId="srix4kauthdata" width="120" />	
+					<item type="button" text="AUTHENTICATE" tooltip="Press button to sent AUTHENTICATE command to SRIX4K" action0="hf 14b raw -c -p 0A $srix4kauthdata" />				
+					<item type="label" label="AUTHENTICATE command [0A+6bytes] is used to authenticate SRIX4K with original CRX14 
+					contained in official readers so it is executed by the tag but for some reason you
+					cannot receive back the expected 3bytes signature computed by the tag (maybe unknown
+					special bytes known only by CRX14?)
+					--------------------------------------------------------------------------------------" />						
+				</section> 	
+			
+				<section title="SRI512/SRT512/SRIX512" tooltip="Manage SRI512/SRT512/SRIX512 tags (-X- means Authenticate [0A] command is available)" uniqueId="sr512r" >
+					<item type="button" text="INITIATE" tooltip="Press button to send Inventory command" action0="hf 14b raw -c -p 06 00" />
+					<item type="label" label="INITIATE answer is 1byte-Chip-ID + 2bytes CRC
+					--------------------------------------------------------------------------------------" />
+					<item type="textbox" defaultValue="" tooltip="Insert the 1byte-Chip-ID received from previous INITIATE command" uniqueId="sr512uid" label="Chip-ID" width="30" />
+					<item type="button" text="SELECT" tooltip="Press button to select the previous-received 1byte-Chip-ID" action0="hf 14b raw -c -p 0E $sr512uid" />
+					<item type="label" label="SELECT answer is 1byte-Chip-ID + 2bytes CRC
+					--------------------------------------------------------------------------------------" />
+					<item type="button" text="GET UID" tooltip="Press button to get tag UID" action0="hf 14b raw -c -p 0B" />
+					<item type="label" label="GET UID answer is 8byts-UID (LSB first) + 2bytes CRC
+					--------------------------------------------------------------------------------------" />	
+					<item type="textbox" defaultValue="00" tooltip="Block number to read (from 00 to 0F - FF for OTP_Lock_Reg block)" label="Block Number (00-7F):" uniqueId="sr512rblock" width="25" />
+					<item type="button" text="READ BLOCK" tooltip="Press button to read the selected block" action0="hf 14b raw -c -p 08 $sr512rblock" />
+					<item type="label" label="READ BLOCK answer is 4bytes + 2bytes CRC
+					--------------------------------------------------------------------------------------" />	
+					<item type="button" text="READ ALL TAG BLOCKS" tooltip="Press button to read all SR?512? blocks, OTP_Lock_Reg [FF] included" action0="hf 14b sri512read" />
+					<item type="label" label="This is a PM3 command so it doesn't need INITIATE nor SELECT to be sent 
+					--------------------------------------------------------------------------------------" />
+					<item type="label" label="WRITE USING PM3 INTERNAL COMMANDS" />					
+					<item type="textbox" defaultValue="00" tooltip="Block number to write (from 00 to 0F - FF for OTP_Lock_Reg block)" label="Block Number:" uniqueId="sr512wblock" width="30" />
+					<item type="textbox" defaultValue="00 00 00 00" tooltip="Data to be written (4 bytes in hex)" label="Data:" uniqueId="sr512wdata" width="80" />				
+					<item type="label" label="BE EXTREMELY CAREFUL WRITING SRIX4K SPECIAL BLOCKS !!! 
+					WRITING UNWANTED VALUES TO WRONG BLOCKS MAY BRING TO IRREVERSIBLE TAG CHANGES !!! 
+					PLEASE REFERE TO THE SPECIFIC PRODUCT DATASHEET FOR MORE INFO !!!" />	
+					<item type="label" label="" />
+					<item type="button" text="WRITE BLOCK" tooltip="Press button to read the selected block" action0="hf 14b write 2 $sr512wblock $sr512wdata" />
+					<item type="label" label="There is no answer to this command except for a normal -CRC failed-
+					--------------------------------------------------------------------------------------" />	
+					<item type="label" label="WRITE USING RAW COMMANDS" />					
+					<item type="textbox" defaultValue="00" tooltip="Block number to write (from 00 to 0F - FF for OTP_Lock_Reg block)" label="Block Number:" uniqueId="sr512wblock" width="30" />
+					<item type="textbox" defaultValue="00 00 00 00" tooltip="Data to be written (4 bytes in hex)" label="Data:" uniqueId="sr512wdata" width="80" />				
+					<item type="label" label="BE EXTREMELY CAREFUL WRITING SRIX4K SPECIAL BLOCKS !!! 
+					WRITING UNWANTED VALUES TO WRONG BLOCKS MAY BRING TO IRREVERSIBLE TAG CHANGES !!! 
+					PLEASE REFERE TO THE SPECIFIC PRODUCT DATASHEET FOR MORE INFO !!!" />	
+					<item type="label" label="" />
+					<item type="button" text="WRITE BLOCK" tooltip="Press button to read the selected block" action0="hf 14b raw -c -p 09 $sr512wblock $sr512wdata" />
+					<item type="label" label="There is no answer to this command except for a normal -CRC failed-
+					--------------------------------------------------------------------------------------" />						
+					<item type="button" text="RESET TO INVENTORY" tooltip="Press button to reset SR?512? - After this command you can re-execute INITIATE" action0="hf 14b raw -c -p 0C" />
+					<item type="label" label="There is no answer to this command except for a normal -CRC failed- 
+					--------------------------------------------------------------------------------------" />		
+					<item type="button" text="COMPLETION" tooltip="Press button to temporarily deactivate SR?512? - After this command you must remove the tag from magnetic filed and put it back again to re-send INITIATE" action0="hf 14b raw -c -p 0F" />
+					<item type="label" label="There is no answer to this command except for a normal -CRC failed- 
+					--------------------------------------------------------------------------------------" />						
+				</section> 	
+				
+			</section>
+
+			
+
+		</section>	
+	
+		<section title="14443B Help" tooltip="Help command shows HF 14b subcategory available commands" uniqueId="14bh" >
+			<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="hf 14b help" />
+		</section> 	
+	
+	</section>
+
+
+
+   	<section title="ISO15693" tooltip="Manage ISO15693 tags (ex. I-CODE SLI)">
+
+		<section title="15693 DEMODULATE" tooltip="Demodulate ISO15693 from tag" uniqueId="156demod" >
+			<item type="button" text="DEMODULATE" tooltip="Press button to demodulate ISO15693 from tag" action0="hf 15 demod" />
+		</section> 	
+		
+		<section title="15693 READ" tooltip="Read HF tag (ISO15693)" uniqueId="156read" >
+			<item type="button" text="READ" tooltip="Press button to read ISO15693 tag" action0="hf 15 read" />
+		</section> 			
+		
+		<section title="15693 RECORD" tooltip="Record Samples (ISO15693)" uniqueId="156rec" >
+			<item type="button" text="RECORD" tooltip="Press button to record ISO15693 samples" action0="hf 15 record" />
+		</section> 			
+		
+		<section title="15693 READER" tooltip="Act like an ISO15693 reader" uniqueId="156reader" >
+			<item type="button" text="ACT AS A READER" tooltip="Press button to use PM3 as an ISO15693 reader" action0="hf 15 reader" />
+		</section> 
+
+		<section title="15693 SIMULATE" tooltip="Simulate behaviour of an ISO15693 tag (clone)" uniqueId="156sim" >
+			<item type="textbox" defaultValue="" tooltip="Write UID that pm3 will simulate (in HEX)" uniqueId="UID15" label="UID (16 HEX characters):" width="180"/>						
+			<item type="button" text="SIMULATE" tooltip="Press button to simulate an ISO15693 tag" action0="hf 15 sim $UID15" />
+		</section>
+	
+		<section title="15693 CMD" >
+		
+			<section title="Inquiry" tooltip="Search for tags-cards" uniqueId="156cmd1" >
+				<item type="button" text="INQUIRY" tooltip="Press button to search for tags in range" action0="hf 15 cmd inquiry" />
+						<item type="label" label="This command analyzes the ISO15693 tag sending [26 01 00] command [Invemtory] to
+						retrieve tag information: FLAGS(1byte)+UID(8bytes)+DSFID(1byte)+CRC(2bytes);
+						UID = always starts with E0, then you find 1byte-IC Manufacturer code followed
+						by 48bit unique tag serial number.
+						DSFID = [Data Storage Format Identifier] which indicates how the data is 
+						structured in the tag [VICC = Vicinity Integrated Circuit Card] memory. 
+						It may be programmed and locked by the respective commands. It allows for 
+						instant knowledge on the logical organisation of the data. If its programming 
+						is not supported by the VICC, the VICC shall respond with the value zero ('00').
+												
+						Here is the list of IC-Manufacturer known codes:
+						
+						'01' Motorola UK
+						'02' STMicroelectronics SA France
+						'03' Hitachi, Ltd Japan
+						'04' NXP Semiconductors Germany
+						'05' Infineon Technologies AG Germany
+						'06' Cylink USA
+						'07' Texas Instrument France
+						'08' Fujitsu Limited Japan
+						'09' Matsushita Electronics Corporation, Semiconductor Company Japan
+						'0A' NEC Japan
+						'0B' Oki Electric Industry Co. Ltd Japan
+						'0C' Toshiba Corp. Japan
+						'0D' Mitsubishi Electric Corp. Japan
+						'0E' Samsung Electronics Co. Ltd Korea
+						'0F' Hynix Korea
+						'10' LG-Semiconductors Co. Ltd Korea
+						'11' Emosyn-EM Microelectronics USA
+						'12' INSIDE Technology France
+						'13' ORGA Kartensysteme GmbH Germany
+						'14' SHARP Corporation Japan
+						'15' ATMEL France
+						'16' EM Microelectronic-Marin SA Switzerland
+						'17' KSW Microtec GmbH Germany
+						'18' ZMD AG Germany
+						'19' XICOR, Inc. USA
+						'1A' Sony Corporation Japan
+						'1B' Malaysia Microelectronic Solutions Sdn. Bhd Malaysia
+						'1C' Emosyn USA
+						'1D' Shanghai Fudan Microelectronics Co. Ltd. P.R. China
+						'1E' Magellan Technology Pty Limited Australia
+						'1F' Melexis NV BO Switzerland
+						'20' Renesas Technology Corp. Japan
+						'21' TAGSYS France
+						'22' Transcore USA
+						'23' Shanghai belling corp., ltd. China
+						'24' Masktech Germany Gmbh Germany
+						'25' Innovision Research and Technology Plc UK
+						'26' Hitachi ULSI Systems Co., Ltd. Japan
+						'27' Cypak AB Sweden
+						'28' Ricoh Japan
+						'29' ASK France
+						'2A' Unicore Microsystems, LLC Russian Federation
+						'2B' Dallas Semiconductor/Maxim USA
+						'2C' Impinj, Inc. USA
+						'2D' RightPlug Alliance USA
+						'2E' Broadcom Corporation USA
+						'2F' MStar Semiconductor, Inc Taiwan, ROC
+						'30' BeeDar Technology Inc. USA
+						'31' RFIDsec Denmark
+						'32' Schweizer Electronic AG Germany
+						'33' AMIC Technology Corp Taiwan
+						'34' Mikron JSC Russia
+						'35' Fraunhofer Institute for Photonic Microsystems Germany
+						'36' IDS Microchip AG Switzerland
+						'37' Kovio USA
+						'38' HMT Microelectronic Ltd Switzerland
+						'39' Silicon Craft Technology Thailand
+						'3A' Advanced Film Device Inc. Japan
+						'3B' Nitecrest Ltd UK
+						'3C' Verayo Inc. USA
+						'3D' HID Global USA
+						'3E' Productivity Engineering Gmbh Germany
+						'3F' Austriamicrosystems AG (reserved) Austria
+						'40' Gemalto SA France
+						'41' Renesas Electronics Corporation Japan
+						'42' 3Alogics Inc Korea
+						'43' Top TroniQ Asia Limited Hong Kong
+						'44' Gentag Inc (USA) USA
+					--------------------------------------------------------------------------------------" />					
+			</section>
+			
+			<section title="Read Block" tooltip="Read single block from tag-card" uniqueId="156cmd2" >
+				<item type="checkbox" valueChecked="-2" valueUnchecked="" defaultValue="checked" tooltip="If checked, PM3 will use slower communication method" uniqueId="optionsBox" text="use slower communication method"/>			
+				<item type="drop-down" defaultValue="u" values="u,s,*,Type UID(16Hex chars)" tooltip="Mode can be: 'u'=unaddressed tag, 's'=selected tag, '*'=scan for tag or type full uid (16Hex chars) " uniqueId="modeTextbox" label="Mode" width="120"/>
+				<item type="drop-down" defaultValue="0" values="0:255" tooltip="Page number to read. Value between 0 and 255" uniqueId="pageTextbox" label="Page Number:"  width="40"/>
+				<item type="button" text="READ BLOCK" tooltip="Press button to Send Read Command" action0="hf 15 cmd read $optionsBox $modeTextbox $pageTextbox" />
+			</section>
+
+			<section title="Write Block" tooltip="Write single block from tag-card" uniqueId="156cmd3" >
+				<item type="checkbox" valueChecked="-2" valueUnchecked="" defaultValue="checked" tooltip="If checked, PM3 will use slower communication method" uniqueId="optionsBox" text="use slower communication method"/>			
+				<item type="checkbox" valueChecked="-o" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, it will enable Option Flag" uniqueId="optionFlag" text="set OPTION Flag (needed for TI Hi-Tags HF-I)"/>
+				<item type="drop-down" defaultValue="u" values="u,s,*,Type UID(16Hex chars)" tooltip="Mode can be: 'u'=unaddressed tag, 's'=selected tag, '*'=scan for tag or type full uid (16Hex chars) " uniqueId="modeTextbox" label="Mode" width="120" />
+				<item type="drop-down" defaultValue="0" values="0:255" tooltip="Page number to read. Value between 0 and 255" uniqueId="pageTextbox" label="Page Number:"  width="40"/>
+				<item type="textbox" defaultValue="00 00 00 00" tooltip="Hex data to write (ex. AA BB CC DD or AABBCCDD)" uniqueId="dataTextbox" label="Data to be written (in hex)" width="70"/>
+				<item type="button" text="WRITE BLOCK" tooltip="Press button to Send Write Command" action0="hf 15 cmd write $optionsBox $optionFlag $modeTextbox $pageTextbox $dataTextbox" />
+			</section>
+
+			<section title="Read Multi Blocks" tooltip="Read multiple blocks from tag-card" uniqueId="156cmd4" >
+				<item type="checkbox" valueChecked="-2" valueUnchecked="" defaultValue="checked" tooltip="If checked, PM3 will use slower communication method" uniqueId="optionsBox" text="use slower communication method"/>			
+				<item type="drop-down" defaultValue="u" values="u,s,*,Type UID(16Hex chars)" tooltip="Mode can be: 'u'=unaddressed tag, 's'=selected tag, '*'=scan for tag or type full uid (16Hex chars) " uniqueId="modeTextbox" label="Mode" width="120"/>
+				<item type="drop-down" defaultValue="0" values="0:255" tooltip="Page number to start with. Value between 0 and 255" uniqueId="startTextbox" label="Start at page:"  width="40"/>
+				<item type="drop-down" defaultValue="255" values="0:255" tooltip="Page number to end with. Value between 0 and 255" uniqueId="endTextbox" label="End at page:" width="40"/>
+				<item type="button" text="READ MULTI BLOCKS" tooltip="Press button to Send Read Multi Blocks Command" action0="hf 15 cmd readmulti $optionsBox $modeTextbox $startTextbox $endTextbox" />
+			</section>
+			
+			<section title="System Information" tooltip="Retrieve information from tag-card" uniqueId="156cmd5" >
+				<item type="checkbox" valueChecked="-2" valueUnchecked="" defaultValue="checked" tooltip="If checked, PM3 will use slower communication method" uniqueId="optionsBox" text="use slower communication method"/>			
+				<item type="drop-down" defaultValue="u" values="u,s,*,Type UID(16Hex chars)" tooltip="Mode can be: 'u'=unaddressed tag, 's'=selected tag, '*'=scan for tag or type full uid (16Hex chars)" uniqueId="modeTextbox" label="Mode:" width="120"/>
+				<item type="button" text="GET SYSTEM INFO" tooltip="Press button to Get System Information" action0="hf 15 cmd sysinfo $optionsBox $modeTextbox" />
+								<item type="label" label="This command analyzes the ISO15693 tag sending [02 2B] command [Get System Information] to retrieve 
+						tag information: FLAGS(1byte)+Info Flags(1byte)+UID(8bytes)+DSFID(1byte)+AFI(1byte)+Other Fields+CRC(2bytes);
+						Info Flags: various bit-coded info (ex.the presence or not of Memory Size or IC Reference information)
+						UID = always starts with E0, then you find 1byte-IC Manufacturer code followed by 48bit unique	tag 
+						serial number.
+						DSFID = [Data Storage Format Identifier] which indicates how the data is structured in the 	tag 
+						[called VICC = Vicinity Integrated Circuit Card] memory. It may be programmed and locked by the 
+						respective commands. It allows for instant knowledge on the logical organisation of the data.
+						If its programming is not supported by the VICC, the VICC shall respond with the value zero ('00').
+						AFI = Application Family Identifier; represents the type of application targeted by the VCD and is used 
+						to extract from all the VICCs present only the VICCs meeting the required application criteria.
+						Other Fields = Usually Memory Size (2bytes: ex.033F = 64blocks[3F] of 4 bytes[03])+IC Reference (1byte);
+						(IC Reference is manufacturer specific and is usually find inside specific tag datasheet).
+						-------------------------------------------------------------------------------------------------------------" />	
+			</section>
+
+			<section title="Send Raw Commands" tooltip="Send raw commands to tag-card" uniqueId="156cmd6" >
+				<item type="checkbox" valueChecked="-r" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, PM3 will not read response from tag" uniqueId="readResponse" text="do not read response"/>
+				<item type="checkbox" valueChecked="-2" valueUnchecked="" defaultValue="checked" tooltip="If checked, PM3 will use slower communication method" uniqueId="optionsBox" text="use slower communication method"/>			
+				<item type="checkbox" valueChecked="-c" valueUnchecked="" defaultValue="checked" tooltip="If checked, PM3 will auto-calculate and append CRC to sent command" uniqueId="calcCRC" text="auto-calculate and append CRC"/>
+				<item type="textbox" defaultValue="" tooltip="Hex data to be sent (ex. send 02 2B or 022B to get System Information)" uniqueId="dataTextbox" label="Data to be sent (in hex):" width="180"/>				
+				<item type="button" text="SEND RAW COMMAND" tooltip="Press button to Send Raw Command to tag/card" action0="hf 15 cmd raw $readResponse $optionsBox $calcCRC $dataTextbox" />
+						<item type="label" label="
+						Main ISO15693 Commands: 
+						01 = Inventory (usage: 260100+2bytes ISO15693-CRC - answer: 12bytes)
+						2B = Get_System_Info (usage: 022B+2bytes ISO15693-CRC - answer: 14 or more bytes)
+						20 = Read Block (usage: 0220+1byte block number+2bytes ISO15693-CRC - answer: 4bytes)
+						21 = Write Block (usage: 0221+1byte block number+4bytes data+2bytes ISO15693-CRC - answer: 4bytes)
+						23 = Read Multiple Blocks (usage: 0223+1byte 1st block to read+1byte last block to read+2bytes ISO15693-CRC)
+						2C = Read Multiple Block Security Status (usage: 022C+1byte 1st block security to read+
+						     1byte last block security to read+2bytes ISO15693-CRC)
+					----------------------------------------------------------------------------------------------------------------" />
+			</section>				
+
+ 			<section title="Debug" tooltip="Enable/disable debugging output" uniqueId="156cmd7" >
+			<item type="checkbox" valueChecked="1" valueUnchecked="0" defaultValue="0" tooltip="If checked, PM3 will enable debug output (by default it is disabled)" uniqueId="enableDebug" text="set debug status (checked = activate; unchecked = deactivate)"/>
+			<item type="button" text="SET DEBUG STATUS" tooltip="Press button to Set the Status" action0="hf 15 cmd debug $enableDebug" />			
+			</section>
+			
+ 			<section title="Help" tooltip="Help command shows HF 15 CMD available sub-commands" uniqueId="156cmd8" >
+				<item type="button" text="HELP" tooltip="Press button to obtain the sub-commands help info" action0="hf 15 cmd help" />
+			</section>
+			
+		</section>
+		
+
+		<section title="15693 DUMP MEMORY" tooltip="Read all memory pages of an ISO15693 tag" uniqueId="156dump" >
+			<item type="button" text="DUMP" tooltip="Press button to dump IOS15693 tag memory" action0="hf 15 dumpmemory" />
+						<item type="label" label="This command analyzes the ISO15693 tag sending [26 01 00] command [Inventory] to
+						retrieve tag information; in particular it detects correct tag memory size 
+						and starts to dump each single block one after the other with command 
+						[22 20+UID+block num.] until the end of memory.
+					--------------------------------------------------------------------------------" />	
+			
+		</section> 	
+		
+		<section title="15693 FIND AFI" tooltip="Bruteforce AFI of an ISO15693 tag" uniqueId="156afi" >
+			<item type="button" text="BRUTEFORCE AFI" tooltip="Press button to bruteforce AFI" action0="hf 15 findafi" />
+		</section> 			
+				
+		<section title="15693 Help" tooltip="Help command shows HF 15 subcategory available commands" uniqueId="156h" >
+			<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="hf 15 help" />
+		</section> 	
+		
+	</section>		
+	
+	<section title="ELECTRONIC IDENTIFICATION DOCUMENTS">
+		<section title="Acquire PACE nonces" tooltip="Acquire n>0 encrypted PACE nonces of size m>0 with d sec pauses" uniqueId="epaacqu">
+			<item type="textbox" defaultValue="10" tooltip="Size" uniqueId="epamvalue" label="Size of Enrcypted PACE nonces (>0):" width="50"/>		
+			<item type="textbox" defaultValue="16" tooltip="Number of encrypted PACE" uniqueId="epanvalue" label="Number of encrypted PACE (>0):" width="50"/>		
+			<item type="textbox" defaultValue="0" tooltip="Pause Time (in seconds)" uniqueId="epadvalue" label="Pause Time (sec.):" width="50"/>			
+			<item type="button" text="ACQUIRE" tooltip="Press button to acquire encrypted PACE nonces" action0="hf epa cnonces $epamvalue $epanvalue $epadvalue" />	
+		</section>
+		
+		<section title="EPA Help" tooltip="Help command shows EPA available commands" uniqueId="epah">
+			<item type="button" text="HELP" tooltip="Press button to obtain EPA help" action0="hf epa help" />	
+		</section>
+	</section>
+	
+	<section title="LEGIC" tooltip="Manage LEGIC tags">
+		<section title="LEGIC Reader" tooltip="Read bytes from a LEGIC card" uniqueId="legicreader" >
+			<item type="textbox" defaultValue="" tooltip="Offset" uniqueId="legicoffset" label="Offset:" width="40"/>		
+			<item type="textbox" defaultValue="" tooltip="Lenght" uniqueId="legiclen" label="Lenght:" width="40"/>				
+			<item type="button" text="ACT AS A READER" tooltip="Press button to read bytes from a LEGIC card" action0="hf legic reader $legicoffset $legiclen" />
+		</section> 		
+		<section title="LEGIC Decode" tooltip="Display deobfuscated and decoded LEGIC RF tag data" uniqueId="legicdecode" >
+			<item type="button" text="DECODE" tooltip="Press button to display deobfuscated and decoded LEGIC RF tag data (use after 'hf legic reader' command)" action0="hf legic decode" />
+		</section> 		
+		<section title="LEGIC Load" tooltip="Restore Samples" uniqueId="legicload" >
+			<item type="browse-load" label="Select or Type Samples File Name:" defaultValue="" tooltip="Type the path to the file containing the samples data or press browse button to select it" uniqueId="legicfilenload" width="300" />		
+			<item type="button" text="LOAD" tooltip="Press button to load samples" action0="hf legic load $legicfilenload" />			
+		</section> 		
+		<section title="LEGIC Save" tooltip="Store Samples" uniqueId="legicsav" >
+			<item type="browse-save" label="Select or Type Samples File Name:" defaultValue="" tooltip="Type the path to the file containing the samples data or press browse button to select it" uniqueId="legicfilensave" width="300" />				
+			<item type="textbox" defaultValue="" tooltip="Lenght" uniqueId="legicsavlen" label="Lenght:" width="40"/>			
+			<item type="button" text="SAVE" tooltip="Press button to store samples" action0="hf legic save $legicfilensave" />
+		</section> 			
+		<section title="LEGIC Simulate" tooltip="Start LEGIC tag simulator (use after 'load' or 'read' commands)" uniqueId="legicsim" >
+			<item type="textbox" defaultValue="" tooltip="phase drift" uniqueId="legicphase" label="Phase Drift:"/>		
+			<item type="textbox" defaultValue="" tooltip="frame drift" uniqueId="legicframe" label="Frame Drift:"/>		
+			<item type="textbox" defaultValue="" tooltip="req-resp drift" uniqueId="legicreq" label="Req-Resp Drift:"/>					
+			<item type="button" text="SIMULATE" tooltip="Press button to start LEGIC tag simulator (use after 'load' or 'read' commands) - Press PM3 button to stop simulation!" action0="hf legic sim $legicphase $legicframe $legicreq" />
+		</section> 			
+		<section title="LEGIC Help" tooltip="Help command shows LEGIC available commands" uniqueId="legich" >
+			<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="hf legic help" />
+		</section> 		
+	</section>
+	
+	<section title="iCLASS" tooltip="Manage HID iCLASS">
+		<section title="iCLASS List" tooltip="List iClass History" uniqueId="iclasslist" >
+			<item type="checkbox" valueChecked="f" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, also shows frame delay times" uniqueId="icf" text="Check to also shows frame delay times"/>	
+			<item type="checkbox" valueChecked="c" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, put CRCs between [crc]" uniqueId="icc" text="Check to put CRCs between [crc]"/>	
+			<item type="button" text="LIST" tooltip="Press button to list iClass history" action0="hf list iclass $icf $icc" />
+		</section> 	
+		<section title="iCLASS Snoop" tooltip="Eavesdrop iClass communication" uniqueId="iclasssnoop" >
+			<item type="button" text="SNOOP" tooltip="Press button to Eavesdrop iClass communication (works quite well also for ISO15693 communications)" action0="hf iclass snoop" />
+		</section> 		
+		<section title="iCLASS Simulate" tooltip="Simulate behaviour of an iClass tag" uniqueId="iclasssim" >
+			<item type="drop-down" defaultValue="0" values="0:2" tooltip="Simulation Type: 0 = Simulate Given CSN - 1 = Simulate Default CSN - 2 = Iterate CSNs, gather Message Authentication Codes [MACs]" uniqueId="iclasstype" label="Simulation Type:" width="30" />		
+			<item type="textbox" defaultValue="" tooltip="CSN(16hex characters)" uniqueId="iclasscsn" label="Card Serial Number [CSN] - use with Simulation Type 0 Only:" width="120"/>	
+			<item type="button" text="SIMULATE" tooltip="Press button to Simulate an iClass tag" action0="hf iclass sim $iclasstype $iclasscsn" />
+		</section> 	
+		
+		<section title ="iCLASS Reader" tooltip="Act as an iClass reader" uniqueId="iclassreader">
+			<item type="textbox" defaultValue="0" tooltip="Reader Type" uniqueId="iclassrdrtype" label="Simulation Type:" width="30" />		
+			<item type="button" text="ACT AS A READER" tooltip="Press button to Simulate an iClass tag - Press PM3 button to stop simulation!" action0="hf iclass reader $iclassrdrtype" />		
+		</section>
+
+		<section title="iCLASS Dump" tooltip="Dump iClass tag" uniqueId="iclassdump" >
+			<item type="checkbox" valueChecked="e" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, the key is interpreted as the 16 byte Custom Key (KCus), which can be obtained via reader-attack; see 'hf iclass sim 2'. This key should be on iclass-format" uniqueId="ickey" text="Check to use specified key as Custom Key (KCus)"/>
+			<item type="textbox" defaultValue="" tooltip="Master Key if above the option is not checked; Custom Key if checked (both keys are 16 bytes long)" uniqueId="ickey" label="Key" width="120"/>	
+			<item type="button" text="DUMP" tooltip="Press button to Dump an iClass tag" action0="hf iclass dump $ice $ickey" />
+		</section> 
+		
+		<section title="iCLASS Help" tooltip="Help command shows iCLASS available commands" uniqueId="iclassch" >
+			<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="hf iclass help" />
+		</section> 	
+	</section>
+
+	<section title="List RAW" tooltip="List raw bytes (no annotations are written, and no crc-checks are made)" uniqueId="hflistraw" >
+		<item type="checkbox" valueChecked="f" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, also shows frame delay times" uniqueId="rawf" text="Check to also shows frame delay times"/>	
+		<item type="checkbox" valueChecked="c" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, put CRCs between [crc]" uniqueId="rawc" text="Check to put CRCs between [crc]"/>	
+		<item type="button" text="TEST ANTENNA" tooltip="Press button to measure HF antenna tuning" action0="hf list raw $rawf $rawc" />
+	</section> 
+	
+	<section title="Tune" tooltip="Continuously measure HF antenna tuning" uniqueId="hftune" >
+		<item type="button" text="TEST ANTENNA" tooltip="Press button to measure HF antenna tuning" action0="hf tune" />
+	</section> 	
+
+	<section title="Help" tooltip="Help command shows High Frequency available commands" uniqueId="hfh" >
+		<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="hf help" />
+	</section> 
+	
+</section>
+
+
+
+<section title="LF (Low Frequency)" tooltip="Low Frequency Functions/Commands" >
+
+	<section title="SEARCH LF" tooltip="Read 125 kHz LF ID-only tag and test known tags to get ID" uniqueId="lfsearch" >
+		<item type="label" label="Press button to search a 125kHz unknown tag; if online it will do -lf read-/-data samples 20000- 
+		then check the read samples against EM410x, HID Prox, IOProx, awid, pyramid, verex g prox ii, and paradox tags and output the result.
+		If offline it will check inside the graphbuffer (so do a -data load- first) and perform the same tests." />
+		<item type="label" label="" />
+		<item type="checkbox" valueChecked="1" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, client will search from the graphbuffer" uniqueId="lfchkbuf" text="Check to use graphbuffer insted of a real tag"/>							
+		<item type="checkbox" valueChecked="u" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, client will search for unknown tags" uniqueId="lfunk" text="Check to search for unknown tags (raw fsk, ask/man and PSK1)"/>							
+		<item type="button" text="SEARCH" label="" tooltip="Press button to search a tag and plot results" action0="lf search $lfchkbuf $lfunk" />	>		
+		<item type="label" label="
+=================================================================
+Example:
+
+proxmark3> lf search u
+#db# Sampling config:                  
+#db#   [q] divisor:           95                  
+#db#   [b] bps:               8                  
+#db#   [d] decimation:        1                  
+#db#   [a] averaging:         1                  
+#db#   [t] trigger threshold: 0                  
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample                 
+#db# buffer samples: ff ff ff ff ff ff ff ff ...                 
+Reading 20000 bytes from device memory
+Data fetched          
+Samples @ 8 bits/smpl, decimation 1:1           
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag          
+False Positives ARE possible
+Checking for known tags:
+Using Clock: 64 - Invert: 0 - Bits Found: 313          
+EM410x pattern found:           
+EM TAG ID    : 0e003023cb          
+Unique TAG ID: 70000cc4d3          
+DEZ 8        : 03154891          
+DEZ 10       : 0003154891          
+DEZ 5.5      : 00048.09163          
+DEZ 3.5A     : 014.09163          
+DEZ 14/IK2   : 00060132697035          
+DEZ 15/IK3   : 000481037173971          
+Other        : 09163_048_03154891          
+Valid EM410x ID Found!"          />
+	</section>	
+
+	<section title="INVESTIGATE LF" tooltip="Investigate a Low Frequency unknown tag" uniqueId="lfinv" >
+		<item type="label" label="Press button to read a 125kHz unknown tag, collect samples, 
+		plot them (in a new window) and save them in \investigated.txt file" />
+		<item type="button" text="INVESTIGATE" label="" tooltip="Press button to investigate tag and plot results" action0="lf read" waitFor0="proxmark3>" action1="data samples 16000" waitFor1="proxmark3>" action2="data plot" waitFor2="proxmark3>" action3="data save investigated.txt" />		
+		<item type="label" label="\r\rNOTES - To act inside the plot window, use the following keyboard keys:" />
+		<item type="label" label="\r\rUP ARROW            = Zoom Out\rDOWN ARROW          = Zoom In\rLEFT ARROW          = Move Left\rCTRL+LEFT ARROW     = Move Left 1 sample\rSHIFT+LEFT ARROW    = Move Left 1 page\rRIGHT ARROW         = Move Right\rCTRL+RIGHT ARROW    = Move Right 1 sample\rSHIFT+RIGHT ARROW   = Move Right 1 page\rLEFT MOUSE CLICK    = Set yellow cursor\rRIGHT MOUSE CLICK   = Set purple cursor\rG                   = Toggle grid display\rH                   = Show help\rL                   = Toggle lock grid relative to samples\rQ                   = Hide window" />
+	</section>	
+	
+	<section title="SEND RAW COMMAND" tooltip="Modulate LF reader field to send command before read " uniqueId="lfcmdread" >
+		<item type="textbox" defaultValue="" tooltip="Duration of 'off' period" uniqueId="lfoffp" label="'Sleeping gap after sending and before reading (in milliseconds):" width="50" />		
+		<item type="textbox" defaultValue="" tooltip="Duration of '0' period" uniqueId="lf0p" label="'0' - What length in microsec represents a '0' (in milliseconds):" width="50" />	
+		<item type="textbox" defaultValue="" tooltip="Duration of '1' period" uniqueId="lf1p" label="'1' - What length in microsec represents a '1' (in milliseconds):" width="50" />
+		<item type="textbox" defaultValue="01010101" tooltip="Command" uniqueId="lfcmd" label="LF Command (in binary form - no bits number limit)" width="500" />		
+		<item type="checkbox" valueChecked="h" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, PM3 will use 134kHz" uniqueId="lf134" text="Check to use 134kHz"/>					
+		<item type="button" text="SEND COMMAND" tooltip="Press to modulate LF reader field to send command before read" action0="lf cmdread $lfoffp $lf0p $lf1p $lfcmd $lf134" />
+	</section> 
+	
+	<section title="READ 125kHz/134kHz ID" tooltip="Read 125/134 kHz LF ID-only tag" uniqueId="readlfid">
+		<item type="textbox" defaultValue="" tooltip="Drive LF antenna at a custom frequency (KHz)" uniqueId="customdiv" label="Select the divisor value to drive the antenna at a custom frequency (ex. 88=134KHz, 95=125KHz):"  width="25"/>
+		<item type="checkbox" valueChecked="h" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, 134kHz frequency will be used" uniqueId="read134" text="Check to use 134kHz (not checked = 125kHz)" />				
+		<item type="button" text="READ ID" tooltip="Press button to read 125/134 kHz LF ID-only tag" action0="lf read $read134 $customdiv" />	
+	</section>	
+
+	<section title="CONFIGURATION ON DEVICE" tooltip="User can get longer sample-runs, both lf read and lf snoop" uniqueId="lfcfg" >
+		<item type="textbox" defaultValue="L" tooltip="Select L for 125KHz, H for 134KHz or manually set divisor" uniqueId="cfghl" label="L for 125, H for 134 KHz or q -divisor- (ex.q 88 for 134, q 95 for 125):" width="30" />		
+		<item type="textbox" defaultValue="8" tooltip="Set resolution of bits per sample" uniqueId="cfgbps" label="Bits per sample (default = 8 (max)):" width="30" />	
+		<item type="textbox" defaultValue="1" tooltip="Sets decimation. A value of N saves only 1 in N samples." uniqueId="cfgdec" label="Decimation (default=1):" width="30" />
+		<item type="label" label="" />
+		<item type="checkbox" valueChecked="0" valueUnchecked="1" defaultValue="unchecked" tooltip="If checked, will average the stored sample value when decimating" uniqueId="cfgaver" text="Check to average the stored sample value when decimating"/>					
+		<item type="textbox" defaultValue="0" tooltip="Sets trigger threshold" uniqueId="$cfgthre" label="Sets trigger threshold (0 means no threshold)" width="30" />		
+		<item type="button" text="CONFIGURE" tooltip="Press to modulate LF reader field to send command before read" action0="lf config $cfghl b $cfgbps d $cfgdec a $cfgaver t $cfgthre" />
+				<item type="label" label="=======================================================================================================
+	User can get longer sample-runs, both lf read and lf snoop. It uses a configuration on the device side.	
+
+	Examples:
+
+      lf config b 8 L          
+                    Samples at 125KHz, 8bps.          
+      lf config H b 4 d 3          
+                    Samples at 134KHz, averages three samples into one, stored with           
+                    a resolution of 4 bits per sample.          
+      lf read          
+                    Performs a read (active field)          
+      lf snoop          
+                    Performs a snoop (no active field)"/>
+	</section> 	
+	
+	<section title="SNOOP" tooltip="Snoop Low Frequency Transmission" uniqueId="snooplfid">
+		<item type="textbox" defaultValue="" tooltip="Threshold Value" uniqueId="lfsnoopthr" label="Set Threshold Value" width="30" />	
+		<item type="label" label="----------------------------------------" />		
+		<item type="button" text="SNOOP 125KHz" tooltip="Press button to start snooping ad 125KHz" action0="lf snoop l $lfsnoopthr" />	
+		<item type="label" label="----------------------------------------" />
+		<item type="button" text="SNOOP 134KHz" tooltip="Press button to start snooping as 134KHz" action0="lf snoop h $lfsnoopthr" />	
+		<item type="label" label="----------------------------------------" />
+		<item type="label" label="SNOOP CUSTOM FREQUENCY" />		
+		<item type="textbox" defaultValue="" tooltip="Drive LF antenna at a custom frequency (KHz)" uniqueId="customdivsnoop" label="Select the divisor value to drive the antenna at a custom frequency (ex. 88=134KHz, 95=125KHz):"  width="30"/>
+		<item type="button" text="SNOOP CUSTOM FREQUENCY" tooltip="Press button to start snooping at desired frequency" action0="lf snoop $customdivsnoop $lfsnoopthr" />			
+	</section>		
+	
+	<section title="SIMULATE LF TAG" tooltip="Takes graphbuffer and attempts to simulate the same wave (no demod necessary - but only works with strong reads)" uniqueId="simlf">
+		<item type="button" text="SIMULATE" tooltip="Press button to simulate LF tag from buffer with optional GAP (in microseconds) - Press PM3 button to stop simulation!" action0="lf sim" />	
+			<item type="label" label="==============================================================================================================
+The [lf sim] command is intended to run directly after a [lf read] - [data samples] or [lf search].  
+It will attempt to simulate the wave form from the graphbuffer without knowing what kind of tag or wave it is.
+This works 80% of the time on ASK, FSK modulated tags if you have a strong antenna."/>	
+	</section>		
+	
+	<section title="SIMULATE LF BIDIRECTIONAL" tooltip="Simulate LF tag (with bidirectional data transmission between reader and tag)" uniqueId="simbid">
+		<item type="button" text="SIMULATE BIDIRECTIONAL" tooltip="Press button to Simulate LF tag (with bidirectional data transmission between reader and tag) - Press PM3 button to stop simulation!" action0="lf simbidir" />	
+	</section>	
+	
+	<section title="SIMULATE LF ASK" tooltip="Simulate lf ASK tag from demodbuffer or raw input" uniqueId="simask">
+		<item type="drop-down" defaultValue="" values="b,m,r" tooltip="Mode can be: 'm'=manchester encoding, 'r'=raw (no encoding)" uniqueId="modesim" label="Encoding type:" width="30"/>
+		<item type="checkbox" valueChecked="c" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, you can specify clock value in the text field below" uniqueId="c" text="Check to specify 'clock' value in the text field below"/>			
+		<item type="textbox" defaultValue="" tooltip="Clock" uniqueId="clocksim" label="Clock (do not use if 'clock' is not checked above):" width="50" />	
+		<item type="checkbox" valueChecked="i" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, PM3 will invert the data before simulating" uniqueId="siminv" text="Check to invert data"/>			
+		<item type="checkbox" valueChecked="s" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, allows to specify a gap between transmission loops in the text field below" uniqueId="simspecgap" text="Check to specify a 'gap' in the field below"/>			
+		<item type="textbox" defaultValue="" tooltip="GAP time (expressed in microseconds)" uniqueId="simgapvalue" label="GAP (in microseconds  - do not use if 'gap' is not checked above):" width="50" />			
+		<item type="textbox" defaultValue="" tooltip="Hex Data to transmit" uniqueId="simhexdata" label="Data to sim in HEX (must have leading zeros and all digits in transmission):" width="200" />					
+		<item type="button" text="SIMULATE" tooltip="Press button to simulate ASK LF tag - Press PM3 button to stop simulation!" action0="lf simask $modesim $c $clocksim $simspecgap $simgapvalue $siminv d $simhexdata" />	
+			<item type="label" label="----------" />
+			<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="lf simask h" />			
+				<item type="label" label="===============================================================================================================================
+lf simask  --  [c 'clock'] ['i'] ['b'|'m'|'r'] ['s'] [d 'hexdata'] simulate lf ASK tag from demodbuffer or raw input
+so for a rf/64 clock enter:  lf simask c 64
+to enter your data to sim you are entering the entire transmission hex (must have leading zeros and all digits in transmission)
+
+Example trace: modulation-ask-man-32.pm3
+
+lf simask m c 32 d 000102030405060708090A0B"/>		
+	</section>		
+
+	<section title="SIMULATE LF FSK" tooltip="Simulate lf FSK tag from demodbuffer or raw input" uniqueId="simfsk">
+		<item type="checkbox" valueChecked="c" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, you can specify clock value in the text field below" uniqueId="c" text="Check to specify 'clock' value in the text field below"/>		
+		<item type="textbox" defaultValue="" tooltip="Clock" uniqueId="clocksim" label="Clock (do not use if 'clock' is not checked above):" width="50" />	
+		<item type="checkbox" valueChecked="i" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, PM3 will invert the data before simulating" uniqueId="siminv" text="Check to invert data"/>					
+		<item type="checkbox" valueChecked="H" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, allows to specify a fcHigh value in the text field below" uniqueId="H" text="Check to specify 'fcHigh' value in the text filed below"/>					
+		<item type="textbox" defaultValue="" tooltip="fcHigh value" uniqueId="Hv" label="as integer, large field clock length (do not use if 'fcHigh' is not checked above):" width="40" />			
+		<item type="checkbox" valueChecked="L" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, allows to specify a fcLow value in the text field below" uniqueId="L" text="Check to specify 'fcLow' value in the text filed below"/>					
+		<item type="textbox" defaultValue="" tooltip="fcLow value" uniqueId="Lv" label="as integer, small field clock length (do not use if 'fcLow' is not checked above):" width="40" />					
+		<item type="textbox" defaultValue="" tooltip="Hex Data to transmit" uniqueId="simhexdata" label="Data to sim in HEX (must have leading zeros and all digits in transmission):" width="200" />					
+		<item type="button" text="SIMULATE" tooltip="Press button to simulate FSK LF tag - Press PM3 button to stop simulation!" action0="lf simfsk $c $clocksim $H $Hv $L $Lv $siminv d $simhexdata" />	
+			<item type="label" label="----------" />
+			<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="lf simfsk h" />			
+				<item type="label" label="==============================================================================================
+This follows the same principles as the other two simxxx commands, but to specify fsk1 vs fsk2 
+you need to specify the fcHigh and fcLow  (FSK1: fcHigh=8, fcLow=5, FSK2: fcHigh=10, fcLow=8) 
+(in case other fsk methods become needed it is specified this way instead of fsk1 or fsk2) 
+fsk2 vs fsk2a is just a matter of inverting (i)
+
+Example trace: modulation-fsk1a-50.pm3
+
+lf simfsk c 50 H 8 L 5 i d 000102030405060708090a0b"/>		
+	</section>		
+	
+	<section title="SIMULATE LF PSK" tooltip="Simulate lf ASK tag from demodbuffer or raw input" uniqueId="simpsk">
+		<item type="drop-down" defaultValue="" values="1,2,3" tooltip="Mode can be: '1'=PSK1, '2'=PSK2, '3'=PSK3" uniqueId="modesim" label="Encoding type:" width="30"/>
+		<item type="checkbox" valueChecked="c" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, you can specify clock value in the text field below" uniqueId="c" text="Check to specify 'clock' value in the text field below"/>			
+		<item type="textbox" defaultValue="" tooltip="Clock" uniqueId="clocksim" label="Clock (do not use if 'clock' is not checked above):" width="50" />	
+		<item type="checkbox" valueChecked="i" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, PM3 will invert the data before simulating" uniqueId="siminv" text="Check to invert data"/>			
+		<item type="checkbox" valueChecked="" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, allows to specify a carrier value in the drop-down field below" uniqueId="r" text="Check to select a 'carrier' value from the drop-down filed below"/>			
+		<item type="drop-down" defaultValue="" values="r 2,r 4,r 8" tooltip="sets the carrier (valid entries for 'carrier' are 2,4,or 8)" uniqueId="carvalue" label="Carrier:" width="40"/>
+		<item type="textbox" defaultValue="" tooltip="Hex Data to transmit" uniqueId="simhexdata" label="Data to sim in HEX (must have leading zeros and all digits in transmission):" width="200" />					
+		<item type="button" text="SIMULATE" tooltip="Press button to simulate PSK LF tag - Press PM3 button to stop simulation!" action0="lf simpsk $c $modesim $clocksim $r $carvalue $siminv d $simhexdata" />	
+			<item type="label" label="----------" />
+			<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="lf simpsk h" />			
+				<item type="label" label="==============================================================================================
+Sim psk has 3 modes (2 actually since psk3 is not implemented), PSK1, PSK2, PSK3(future)
+specifying 1 or 2 or 3 will set the psk mode
+lf simpsk 2: sets it to PSK2
+r 'carrier' sets the carrier (valid entries for 'carrier' are 2,4,or 8)
+
+Example trace: modulation-psk2-32-2.pm3
+
+lf simpsk 2 c 32 r 2 d 000102030405060708090A0B"/>		
+	</section>		
+	
+	<section title="TAGs" tooltip="Tested LF Tags" uniqueId="lftags" >
+	
+		<section title="AWID" tooltip="Demodulate samples for AWID FSK tags" uniqueId="awid" >
+			<item type="button" text="DEMODULATE" tooltip="Press button to demodulate samples for AWID" action0="data fskawiddemod" />
+		</section>
+	
+		<section title="EM4x">
+		
+			<section title="EM410xread" tooltip="Extract ID from EM410x tag" uniqueId="em4xread">
+				<item type="textbox" defaultValue="" tooltip="Clock Rate" uniqueId="em4xclock" label="Clock Rate (empty = auto-detect):" width="40" />		
+				<item type="button" text="EXTRACT ID" tooltip="Press button to extract ID from EM410x tag" action0="lf em4x em410read $em4xclock" />		
+			</section>
+				
+			<section title="EM410xdemod" tooltip="Continuously Extract ID from EM410x tag" uniqueId="em4xdemodcont">
+				<item type="drop-down" defaultValue="" values="0,1" tooltip="Loop can be: '0'=for continuous loop; '1'=for only 1 tag" uniqueId="loopyn" label="Loop or not:" width="30"/>				
+				<item type="button" text="EXTRACT ID" tooltip="Press button to extract ID from EM410x tag" action0="lf em4x em410xdemod $loopyn" />		
+				<item type="label" label="		
+			This command will continuously attempt to read an em410x tag until the button 
+			is pressed. An argument of 1 will make it search for one tag only."	/>
+			</section>		
+			
+			<section title="EM410xsim" tooltip="Simulate EM410x tag" uniqueId="em410xsim">
+				<item type="textbox" defaultValue="" tooltip="UID Value" uniqueId="em410xUID" label="UID (10 hex characters):" width="80" />		
+				<item type="button" text="SIMULATE" tooltip="Press button to simulate ID from EM410x tag" action0="lf em4x em410sim $em410xUID" />	
+			</section>	
+			
+			<section title="EM410xwatch" tooltip="Watch for EM410x tags" uniqueId="em410xwatch">
+				<item type="checkbox" valueChecked="h" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, PM3 will use 134kHz" uniqueId="em134" text="Check to use 134kHz"/>			
+				<item type="button" text="SCAN FOR TAGS" tooltip="Press button to scan for EM410x tags" action0="lf em4x em410xwatch $em134" />	
+			</section>		
+
+			<section title="EM410xspoof" tooltip="Watch for EM410x tags and reply to them" uniqueId="em410xspoof">
+				<item type="checkbox" valueChecked="h" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, PM3 will use 134kHz" uniqueId="em134" text="Check to use 134kHz"/>			
+				<item type="button" text="SCAN FOR TAGS" tooltip="Press button to scan for EM410x tags and reply to them" action0="lf em4x em410xspoof $em134" />	
+			</section>				
+				
+			<section title="EM410xwrite" tooltip="Write EM410x UID to T5555(Q5) or T55x7 tag" uniqueId="em410xwrite">
+				<item type="textbox" defaultValue="" tooltip="UID Value" uniqueId="em410xUID" label="UID (10 hex characters):" width="80" />		
+				<item type="drop-down" defaultValue="" values="0,1" tooltip="Mode can be: '0'=write to T5555 tag, '1'=write to T55x7" uniqueId="modeTextbox" label="Destinantion Tag Type:" width="30"/>
+				<item type="textbox" defaultValue="" tooltip="Optionally set clock rate value" uniqueId="emdataclock" label="Clock Rate:" width="50" />			
+				<item type="button" text="CLONE TO TAG" tooltip="Press button to write EM410x UID to T5555/T55x7 tag" action0="lf em4x em410xwrite $em410xUID $modeTextbox $emdataclock" />	
+			</section>			
+			
+			<section title="EM4x50read" tooltip="Extract data from EM4x50 tag" uniqueId="em4x50read">
+				<item type="button" text="EXTRACT DATA" tooltip="Press button to extract data from EM4x50 tag" action0="lf em4x 4xread" />		
+			</section>		
+			
+			<section title="EM4xxxReadWord" tooltip="Read EM4xxx word data" uniqueId="readword">
+				<item type="drop-down" defaultValue="" values="0:15" tooltip="Select word to read" uniqueId="modeTextbox" label="Word to Read:" width="30"/>		
+				<item type="button" text="READ WORD" tooltip="Press button to read EM4xxx word" action0="lf em4x rd $modeTextbox" />	
+			</section>	
+
+			<section title="EM4xxxReadWordWithPassword" tooltip="Read EM4xxx word data" uniqueId="readwordpwd">
+				<item type="drop-down" defaultValue="" values="0:15" tooltip="Select word to read" uniqueId="modeTextbox" label="Word to Read:" width="30"/>
+				<item type="textbox" defaultValue="00000000" tooltip="Password value: 8 hex characters" uniqueId="em4xxxpass" label="Password:" width="80" />		
+				<item type="button" text="READ WORD WITH PWD" tooltip="Press button to read EM4xxx word in password mode" action0="lf em4x readword $modeTextbox $em4xxxpass" />	
+			</section>			
+			
+			<section title="EM4xxxWriteWord" tooltip="Write EM4xxx word data" uniqueId="writeword">
+				<item type="textbox" defaultValue="01020304" tooltip="Data to be written" uniqueId="em4xxxdata" label="Data:" width="80" />	
+				<item type="drop-down" defaultValue="" values="0:15" tooltip="Select word to write" uniqueId="modeTextbox" label="Word to Write:" width="30"/>
+				<item type="button" text="WRITE WORD" tooltip="Press button to write EM4xxx word" action0="lf em4x writeword $em4xxxdata $modeTextbox" />	
+			</section>			
+
+			<section title="EM4xxxWriteWordWithPassword" tooltip="Write EM4xxx word data" uniqueId="writewordpwd">
+				<item type="textbox" defaultValue="00000000" tooltip="Password value: 8 hex characters" uniqueId="em4xxxpass" label="Password:" width="80" />	
+				<item type="textbox" defaultValue="01020304" tooltip="Data to be written" uniqueId="em4xxxdata" label="Data:" width="80" />	
+				<item type="drop-down" defaultValue="" values="0:15" tooltip="Select word to write" uniqueId="modeTextbox" label="Word to Write:" width="30"/>
+				<item type="button" text="WRITE WORD WITH PWD" tooltip="Press button to write EM4xxx word in password mode" action0="lf em4x writewordPWD $em4xxxdata $modeTextbox $em4xxxpass" />	
+			</section>			
+			
+			<section title="EM4x Help" tooltip="Help command shows EM4x available commands" uniqueId="em4xh" >
+				<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="lf em4x help" />
+			</section> 
+			
+		</section>
+		
+		<section title="FLEXPASS" tooltip="Demodulate samples for FlexPass" uniqueId="lfflex" >
+			<item type="button" text="DEMODULATE" tooltip="Press button to demodulate samples for FlexPass" action0="lf flexdemod" />
+		</section> 	
+		
+		<section title="HID">
+			<section title="HID DEMODULATE" tooltip="Demodulate samples for HID Prox Card II" uniqueId="lfhiddem" >
+				<item type="button" text="DEMODULATE" tooltip="Press button to demodulate HID Prox Card II" action0="lf hid demod" />
+			</section>
+			
+			<section title="HID FSK DEMODULATE" tooltip="Realtime HID FSK demodulator" uniqueId="lfhiddemfsk" >
+				<item type="textbox" defaultValue="" tooltip="Find One" uniqueId="hidfskdemodfo" label="Find One (empty = continuous, 1 = find one):" width="15" />	
+				<item type="button" text="DEMODULATE" tooltip="Press button to FSK demodulate HID Prox Card (reads continuously until the button is pressed)" action0="lf hid fskdemod $hidfskdemodfo" />
+				<item type="label" label="
+	HID FSK demodulator, it loops continuously (or until the button is pressed) and if a HID 
+	tag enters the field it will capture and do the FSK demodulation and manchester decoding 
+	of the waveform to return the tag ID as a hex number. It seems the TAG ID is a 44 bit number 
+	and the number printed on the tag is usually bits 16 though 1 (bit 0 is possibly a parity bit)" />
+			</section>		
+			
+			<section title="DATA HID DEMODULATE FSK" tooltip="Demodulate graph window as a HID FSK Tag " uniqueId="datafskhid" >
+				<item type="button" text="DEMODULATE" tooltip="Press button to demodulate graph window as a HID FSK Tag (takes the graphbuffer and hid demods it (for offline mode)" action0="data fskhiddemod" />
+				<item type="label" label="
+		This command allows demodulation and decoding from the graph buffer for HID tag." />
+			</section>			
+			
+			<section title="HID SIMULATOR" tooltip="Simulate HID Prox Card II tag" uniqueId="hidsim">
+				<item type="textbox" defaultValue="" tooltip="HID ID Value" uniqueId="hidID" label="HID Prox Card II ID (up to 44 bits):" width="80" />		
+				<item type="button" text="SIMULATE" tooltip="Press button to simulate HID Prox Card II tag ID - Press PM3 button to stop simulation!" action0="lf hid sim $hidID" />	
+			</section>		
+			
+			<section title="HID CLONE" tooltip="Clone HID Prox Card II to T55x7 tag" uniqueId="hidclone">
+				<item type="textbox" defaultValue="" tooltip="HID ID Value" uniqueId="hidcID" label="HID Prox Card II ID (up to 85 bits):" width="140" />	
+				<item type="checkbox" valueChecked="l" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, 85 bit ID will be used" uniqueId="85bitid" text="Check to use 85bit ID (not checked = 44bit ID)" />			
+				<item type="button" text="CLONE TO TAG" tooltip="Press button to clone HID Prox Card II to T55x7 tag" action0="lf hid clone $hidcID $85bitid" />	
+			</section>			
+			
+			<section title="HID Help" tooltip="Help command shows HID available commands" uniqueId="lfhidh" >
+				<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="lf hid help" />
+			</section> 			
+		</section> 		
+
+		<section title="INDALA">
+			
+			<section title="INDALA PSK DEMODULATOR" tooltip="Demodulate a psk1 indala tag and output bits and save to demodbuffer" uniqueId="indalapskdemod">
+				<item type="textbox" defaultValue="" tooltip="Clock" uniqueId="indalapskc" label="Clock value (optional - empty = auto-detect):" width="30" />		
+				<item type="checkbox" valueChecked="1" valueUnchecked="" defaultValue="unchecked" tooltip="Invert 0 and 1" uniqueId="indalapskinv" label="Invert (optional):" width="40"/>
+				<item type="button" text="DEMODULATE" tooltip="Press button to demodulate" action0="data pskindalademod $indalapskc $indalapskinv" />	
+			</section>				
+		
+			<section title="INDALA CLONE" tooltip="Clone Indala to T55x7" uniqueId="indalaclone">
+				<item type="checkbox" valueChecked="l" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, 224 bit ID will be used" uniqueId="224Clone" text="Check to use 224bit ID (not checked = 64bit ID)" />				
+				<item type="textbox" defaultValue="" tooltip="Indala UID Value" uniqueId="IndalaUID" label="Indala UID (up to 224 bits):" width="140" />		
+				<item type="button" text="Clone" tooltip="Press button to Clone Indala ID to T55x7 TAG" action0="lf indalaclone $IndalaUID $224Clone" />	
+			</section>	
+		</section>
+		
+		<section title="ioProx (Kantech)">
+			<section title="ioProx DEMODULATOR" tooltip="Demodulate samples of ioProx 64bit UID" uniqueId="iopdemod">
+				<item type="button" text="DEMODULATE" tooltip="Press button to demodulate samples of ioProx TAG" action0="lf io demod" />	
+			</section>	
+			
+			<section title="ioProx FSK DEMODULATOR" tooltip="Continuous Read and FSK demodulate ioProx 64bit UID" uniqueId="iopfskdemod">
+				<item type="textbox" defaultValue="" tooltip="Find One" uniqueId="iofskdemodfo" label="Find One (empty = continuous, 1 = find one):" width="15" />
+				<item type="button" text="DEMODULATE" tooltip="Press button begin reading and FSK demodulating ioProx TAGS (reads continuously until the button is pressed)" action0="lf io fskdemod $iofskdemodfo" />	
+							<item type="label" label="
+	Output example:
+	(for 1 tag only option)
+
+	#00000000 0
+	#11110000 1
+	#10111110 1 facility
+	#00000001 1 version 
+	#00001011 1 ID1
+	#11000011 1 ID2
+	#00001011 11 checksum
+	(for all reads)
+	#XSF(01)BE:03011 (00786fa030be1e0b)" />
+			</section>	
+			
+			<section title="DATA IO PROX DEMODULATE" tooltip="Demodulate graph window as an IO PROX FSK Tag " uniqueId="datafskio" >
+				<item type="button" text="DEMODULATE" tooltip="Press button to demodulate graph window as a IO Prox FSK Tag (takes the graphbuffer and hid demods it (for offline mode)" action0="data fskiodemod" />
+				<item type="label" label="
+		This command allows demodulation and decoding from the graph buffer for io prox tag." />		
+			</section> 			
+		
+			<section title="ioProx CLONE" tooltip="Clone ioProx to T55x7" uniqueId="ioProxclone">
+				<item type="textbox" defaultValue="" tooltip="ioProx UID Value" uniqueId="ioProxUID" label="ioProx UID (64 bits):" width="115" />		
+				<item type="button" text="Clone" tooltip="Press button to Clone ioProx ID to T55x7 TAG" action0="lf io clone $ioProxUID" />	
+				<item type="label" label="
+	Output example:
+
+	>lf io clone 00786fa030be1e0b
+	#Cloning with UID 00786fa0 30be1e0b
+	#DONE#" />			
+			</section>	
+			
+			<section title="ioProx Help" tooltip="Help command shows ioProx available commands" uniqueId="lfioph" >
+				<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="lf io help" />
+			</section> 			
+		</section>
+		
+		<section title="TI (Texas Instruments)">
+			<section title="TI DEMODULATE" tooltip="Demodulate raw bits for TI-type LF tag" uniqueId="tidemod">
+				<item type="button" text="DEMODULATE" tooltip="Press button to demodulate raw bits for TI-type LF tag" action0="lf ti demod" />	
+				<item type="label" label="
+	Demodulate the data stream retrieved by hisampless following a tiread.
+	Performs some checks on the recovered data and prints relevant info. 
+	Use the plot command to see a graphical output of the demodulated waveform and the detected bit boundaries.			
+				" />
+			</section>	
+			<section title="TI READ" tooltip="Read and decode a TI 134 kHz tag " uniqueId="tiread">
+				<item type="button" text="READ" tooltip="Press button to read and decode a TI 134 kHz tag" action0="lf ti read" />	
+				<item type="label" label="
+	This tag sends a stream of 128 bits as an FM (frequency modulated) waveform.
+	A zero consists of 16 cycles at 123.2Khz and a one consists of 16 cycles at 134.2Khz meaning the duration
+	of ones and zeroes is slightly different therefore the bit boundaries are not at regular intervals.
+	Once the tag is read, the waveform stored in the buffer is demodulated into a set of three hex numbers 
+	(high 32 bits, low 32 bits and crc). Some checks are performed on the recovered data and relevant info printed. 
+	The TI tag stores 64 bits of data and a 16 bit crc. On the rewriteable TI tags, the crc written to the tag 
+	doesn't have to be valid, therefore 64+16=80 bits of data can be written.
+
+	At the completion of this command, the raw waveform is available in the buffer.			
+				"/>
+			</section>	
+			<section title="TI WRITE" tooltip="Write new data to a r/w TI 134 kHz tag " uniqueId="tiwrite">
+				<item type="textbox" defaultValue="" tooltip="1st Hex Value" uniqueId="tihex1" label="Hex Value 1:" width="70" />	
+				<item type="textbox" defaultValue="" tooltip="2nd Hex Value" uniqueId="tihex2" label="Hex Value 2:" width="70" />	
+				<item type="textbox" defaultValue="" tooltip="CRC will be auto-calculated if left blank" uniqueId="ticrc" label="CRC (optional):" width="40" />		
+				<item type="button" text="WRITE" tooltip="Press button to write new data to a r/w TI 134 kHz tag" action0="lf ti write $tihex1 $tihex2 $ticrc" />	
+				<item type="label" label="
+	Takes two hex parameters that form the 64 bit data to be written. Optionally a hex crc can be provided.
+	If no crc is provided, one will be computed before writing. If a crc is provided, it will be written verbatim,
+	even if it's wrong. This allows one to write up to 80 arbitrary bits to the tag (64 data + 16 crc). Once the 
+	write is finished, the tag immediately transmits the data written back, so this command reads and stores the 
+	raw waveform in the buffer.	
+
+	Example:
+
+	> lf ti write 0xfeedbeef 0xdeadfade
+	#db# Writing the following data to tag:
+	#db# feedbeef, deadfade, 00004bc8
+	#db# Now use tiread to check
+	> lf ti read
+	#db# Info: TI tag is rewriteable
+	#db# Info: TI tag ident is valid
+	#db# Info: Tag data_hi, data_lo, crc = 
+	#db# feedbeef, deadfade, 00004bc8
+
+	#db# Info: CRC is good
+	Alternatively if you want to decode the tag on the client side (PC):
+
+	> lf ti write 0xfeedbeef 0xdeadfade
+	#db# Writing the following data to tag:
+	#db# feedbeef, deadfade, 00004bc8
+	#db# Now use tiread to check
+	> samples 40000
+	> lf ti demod
+	actual data bits start at sample 5851
+	length 260/238
+	Info: raw tag bits = 1.1111.11.1.111111.11.1.1.1111.111111.111.11111.11.11.111.1111111...1..1111.1..1..1111111.1111.11.1.1111
+	Info: Rewriteable TI tag detected.
+	Info: Tag data = FEEDBEEFDEADFADE
+	Info: CRC 4BC8 is good"/>			
+			</section>	
+				<section title="TI Help" tooltip="Help command shows TI available commands" uniqueId="lftih" >
+					<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="lf ti help" />
+				</section> 		
+			</section>	
+			
+		<section title="HITAG">	
+
+			<section title="HITAG LIST" tooltip="List Hitag trace history" uniqueId="hitaghis" >
+				<item type="button" text="LIST" tooltip="Press to list Hitag trace history" action0="lf hitag list" />
+			</section> 	
+			<section title="HITAG READER" tooltip="Act like a Hitag Reader">
+				<section title="Password Mode" uniqueId="readerpw">
+					<item type="textbox" defaultValue="" tooltip="Password Value" uniqueId="pwdhitag" label="Password:" width="80" />							
+					<item type="button" text="PASSWORD MODE" tooltip="???" action0="lf hitag reader 21 $pwdhitag" />
+				</section>	
+				<section title="nr ar Authentication" uniqueId="readerauth">
+					<item type="textbox" defaultValue="" tooltip="nr" uniqueId="hitagnr" label="nr:" width="80" />
+					<item type="textbox" defaultValue="" tooltip="ar" uniqueId="hitagar" label="ar:" width="80" />				
+					<item type="button" text="AUTHENTICATION" tooltip="???" action0="lf hitag reader 22 $hitagnr $hitagar" />
+				</section>	
+				<section title="Key Authentication" uniqueId="readerauth2">
+					<item type="textbox" defaultValue="" tooltip="key is in format: ISK high + ISK low" uniqueId="hitagkey" label="Key:" width="80" />			
+					<item type="button" text="AUTHENTICATION" tooltip="???" action0="lf hitag reader 23 $hitagkey" />
+				</section>
+				<section title="Test Recorded Authentication" uniqueId="readerrec">
+					<item type="button" text="TEST RECODED AUTHENTICATIONS" tooltip="???" action0="lf hitag reader 25" />
+				</section>			
+			</section> 			
+			<section title="HITAG SIMULATE" tooltip="Simulate Hitag transponder" uniqueId="simhitag">
+				<item type="button" text="SIMULATE" tooltip="Press button to Simulate Hitag transponder - Press PM3 button to stop simulation!" action0="lf hitag sim" />	
+			</section>		
+			<section title="HITAG SNOOP" tooltip="Eavesdrop Hitag communication" uniqueId="hitagsnoop">
+				<item type="button" text="SNOOP" tooltip="Press button to Simulate Hitag transponder - Press PM3 button to stop eavesdrop!" action0="lf hitag snoop" />	
+			</section>			
+			<section title="HITAG Help" tooltip="Help command shows TI available commands" uniqueId="lfhitag" >
+				<item type="button" text="HELP" tooltip="Press button to obtain eavesdrop Hitag communication" action0="lf hitag help" />
+			</section> 	
+			
+		</section>
+		
+		<section title="VERICHIP DEMODULATE" tooltip="Demodulate samples for VeriChip" uniqueId="verichip" >
+			<item type="button" text="DEMODULATE" tooltip="Press button to demodulate samples for VeriChip" action0="lf vchdemod" />
+		</section> 	
+
+		<section title="T55XX">	
+			<section title="T55XX READ BLOCK" tooltip="Read T55xx block data (page 0)" uniqueId="t55xxread" >
+				<item type="drop-down" defaultValue="" values="0:7" tooltip="Block to write" uniqueId="t55xxblock" label="Block:" width="30" />
+				<item type="textbox" defaultValue="" tooltip="Password is represented by 8 characters in hex" uniqueId="t55xxpwd" label="Password:" width="60" />
+				<item type="button" text="READ BLOCK" tooltip="Press button to read T55xx block data (page 0)" action0="lf t55xx rd $t55xxblock $t55xxpwd" />
+			</section> 		
+			<section title="T55XX WRITE BLOCK" tooltip="Write T55xx block data (page 0)" uniqueId="t55xxwrite" >
+				<item type="drop-down" defaultValue="" values="0:7" tooltip="Block to write" uniqueId="t55xxblock" label="Block:" width="30" />
+				<item type="textbox" defaultValue="11223344" tooltip="Data are represented by 8 characters in hex" uniqueId="t55xxdata" label="Data to Write:" width="60" />
+				<item type="textbox" defaultValue="" tooltip="Password is represented by 8 characters in hex" uniqueId="t55xxpwd" label="Password:" width="60" />				
+				<item type="button" text="WRITE BLOCK" tooltip="Press button to write T55xx block data (page 0)" action0="lf t55xx wr $t55xxblock $t55xxdata $t55xxpwd" />
+			</section> 	
+			<section title="T55XX READ TRACE" tooltip="Read T55xx traceability data (page 1)" uniqueId="t55xxreadt" >
+				<item type="button" text="READ TRACE" tooltip="Press button to read T55xx traceability data (page 1)" action0="lf t55xx trace" />
+			</section> 	
+			<section title="T55XX READ INFORMATION" tooltip="Read T55xx configuration data (page0 /blk 0)" uniqueId="t55xxinfo" >
+				<item type="button" text="GET INFO" tooltip="Press button to obtain T55XX page0/block0 information" action0="lf t55xx info" />
+			</section> 
+			<section title="T55XX DETECT" tooltip="Try detecting the tag modulation by reading the configuration block" uniqueId="t55xxdet" >
+				<item type="button" text="DETECT" tooltip="Press button to try detecting tag modulation by reading the configuration block" action0="lf t55xx detect" />
+			</section> 	
+			<section title="T55XX CONFIG" tooltip="Set/Get T55XX configuration (modulation, inverted, offset, rate)" uniqueId="t55xxcfg" >
+				<item type="button" text="GET/SET CONFIGURATION" tooltip="Press button to set/get T55XX configuration (modulation, inverted, offset, rate)" action0="lf t55xx config" />
+			</section> 				
+			<section title="T55XX DUMP" tooltip="Dump T55xx card block 0-7. optional with password" uniqueId="t55xxdump" >
+				<item type="textbox" defaultValue="" tooltip="Password is represented by 8 characters in hex" uniqueId="t55xxpwd" label="Password:" width="60" />		
+				<item type="button" text="DUMP" tooltip="Press button to dump T55XX content" action0="lf t55xx dump $t55xxpwd" />
+			</section> 
+			<section title="T55XX SPECIAL" tooltip="Show block changes with 64 different offsets" uniqueId="t55xxspecial" >
+				<item type="button" text="SPECIAL" tooltip="Press button to show block changes with 64 different offsets" action0="lf t55xx special" />
+			</section> 				
+			<section title="T55XX Help" tooltip="Help command shows T55XX Frequency available commands" uniqueId="t55xxh" >
+				<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="lf t55xx help" />
+			</section> 	
+		</section>
+
+		<section title="PARADOX" tooltip="Demodulate samples for Paradox FSK tags" uniqueId="parad" >
+			<item type="button" text="DEMODULATE" tooltip="Press button to demodulate samples for Paradox" action0="data fskparadoxdemod" />
+		</section> 
+		
+		<section title="PCF7931">	
+			<section title="PCF7931 READ" tooltip="Read content of a PCF7931 transponder" uniqueId="pcf7931read" >
+				<item type="button" text="READ" tooltip="Press button to read content of a PCF7931 transponder" action0="lf pcf7931 read" />
+			</section> 		
+			<section title="PCF7931 Help" tooltip="Help command shows PCF7931 Frequency available commands" uniqueId="pcf7931h" >
+				<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="lf pcf7931 help" />
+			</section> 		
+		</section>
+
+		<section title="PYRAMID" tooltip="Demodulate samples for Pyramid FSK tags" uniqueId="pyram" >
+			<item type="button" text="DEMODULATE" tooltip="Press button to demodulate samples for Pyramic" action0="data fskpyramiddemod" />
+		</section> 
+
+	</section>	
+			
+	<section title="Help" tooltip="Help command shows Low Frequency available commands" uniqueId="lfh" >
+		<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="lf help" />
+	</section> 	
+</section>
+
+
+<section title="DATA" tooltip="Plot window / data buffer manipulation">
+
+	<section title="DATA DEBUG" tooltip="Turns on and off debugging or verbose error mode for lf demods " uniqueId="debugonoff" >
+		<item type="drop-down" defaultValue="" values="0:1" tooltip="0=off; 1= n" uniqueId="donoff" label="Set 0 to turn off debug; set 1 to turn it on:" width="30"/>	
+		<item type="button" text="SET" tooltip="Press button set on and off debugging or verbose error mode for lf demods " action0="data setdebugmode $donoff" />
+	</section> 
+
+	<section title="DATA AMPLIFY" tooltip="Amplify Peaks" uniqueId="dataamp" >
+		<item type="button" text="AMPLIFY" tooltip="Press button to amplify peaks" action0="data amp" />
+	</section> 
+	
+	<section title="DATA DEMODULATE ASK EM410x" tooltip="Attempt to demodulate EM410x only" uniqueId="dataaskemdem" >
+		<item type="textbox" defaultValue="" tooltip="Clock Rate" uniqueId="askemclk" label="Clock Rate (optional: empty = auto-detect):" width="20" />		
+		<item type="drop-down" defaultValue=" " values=" ,1" tooltip="Invert" uniqueId="askeminv" label="Invert output (optional: empty for no - 1 for invert):" width="30" />
+		<item type="button" text="DEMODULATE" tooltip="Press button to to demodulate EM410x only - returns 0 if EM format is not found" action0="data askem410xdemod $askemclk $askeminv" />
+			<item type="label" label="----------" />
+			<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="data askem410xdemod h" />
+		
+	</section> 	
+	
+	<section title="DATA DEMODULATE G PROX II" tooltip="demodulate a G Prox II tag from GraphBuffer" uniqueId="dataaskgprox" >
+		<item type="button" text="DEMODULATE" tooltip="Press button to to demodulate G Prox II tag" action0="data askgproxiidemod" />
+	</section> 		
+
+	<section title="DATA CLOCK DETECT" tooltip="Detect clock rate" uniqueId="askdetectc">
+		<item type="drop-down" defaultValue="a" values="a,f,n,p" tooltip="Select to detect ASK, FSK, NRZ, or PSK clock" uniqueId="datadetectarg" label="Modulation to detect is:" width="30" />
+		<item type="button" text="DETECT CLOCK" tooltip="Press button to detect clock for selected Modulation" action0="data detectclock $datadetectarg" />	
+		<item type="label" label="
+						a for ASK
+						f for FSK
+						n for NRZ/Direct
+						p for PSK" />
+	</section>
+
+	<section title="DATA RAWDEMOD" tooltip="Demodulate wave from buffer" uniqueId="datarawdemod">
+		<item type="drop-down" defaultValue="am" values="ab,am,ar,fs,nr,p1,p2, " tooltip="Select to demod ASK/BIPHASE, ASK/MAN, ASK/RAW, FSK, NRZ, PSK1, or PSK2 clock" uniqueId="rawdemodmod" label="Select Modulation:" width="40" /> 
+		<item type="checkbox" valueChecked="h" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, show modulation demod help" uniqueId="rawdemodhelp" text="Check to show modulation help"/>	
+		<item type="textbox" defaultValue="" tooltip="Offset (optional)" uniqueId="offset" label="Offset to begin biphase (default=0):" width="30" />	
+		<item type="textbox" defaultValue="" tooltip="Enter clock (optional)" uniqueId="rawdemodclk" label="Clock (optional):" width="50" />	
+		<item type="drop-down" defaultValue="" values="0,1, " tooltip="1=invert, 0=do not invert (default)" uniqueId="rawdemodinvert" label="Invert output:" width="30"/>	
+		<item type="textbox" defaultValue="" tooltip="Enter Max Errors allowed (optional) - does not apply to FSK" uniqueId="rawdemodmaxerr" label="Max Errors (not for FSK) - (optional):" width="50" />	
+		<item type="textbox" defaultValue="" tooltip="Enter FCHigh(optional) - applies only to FSK" uniqueId="rawdemodfchigh" label="FC High (FSK only) - (optional):" width="50" />	
+		<item type="textbox" defaultValue="" tooltip="Enter FCLow(optional) - applies only to FSK" uniqueId="rawdemodfclow" label="FC Low (FSK only) - (optional):" width="50" />
+		<item type="checkbox" valueChecked="a" valueUnchecked="" defaultValue="unchecked" tooltip="Amplify (optional)" uniqueId="amplify" label="Amplify (default=no amp):" width="50" />			
+		<item type="button" text="RAW DEMOD" tooltip="Press button to set cursor display scale" action0="data rawdemod $offset $rawdemodmod $rawdemodhelp $rawdemodclk $rawdemodinvert $rawdemodfchigh $rawdemodfclow $rawdemodmaxerr $amplify" />
+		<item type="label" label="
+						MODULATION:
+						ab for ASK/BIPHASE demod
+						am for ASK/MANCHESTER demod
+						fS for FSK demod
+						nr for NRZ/Direct demod
+						p1 for PSK1 demod
+						p2 for PSK2 demod" />
+	</section>	
+
+	<section title="DATA ASK EDGEDETECT" tooltip=" Uses threshold to check jumps in sample values > threshold to detect edges of ask waves - it then puts the cleaned waves in graphbuffer and refreshes the graph (for manual demod) " uniqueId="askdetectedge">
+		<item type="textbox" defaultValue="25" tooltip="Threshold" uniqueId="askedgethre" label="Threshold value:" width="50" />		
+		<item type="button" text="DETECT ASK EDGE" tooltip="Press button to detect clock" action0="data askedgedetect $askedgethre" />	
+	</section>	
+	
+	<section title="DATA MANCHESTER DECODE RAW BIN" tooltip="Manchster Decode graph window binary " uniqueId="datamanraw" >
+		<item type="button" text="DECODE MANCHESTER" tooltip="Press button to Manchster Decode graph window binary " action0="data manrawdecode" />
+		<item type="label" label="
+This function strictly takes binary already in the graph buffer and Manchester decodes it.
+It makes two passes on the data checking which results in less errors and outputs the 
+resulting binary inserting 77 for any error it hits. "		/>
+	</section>
+	
+	<section title="DATA BIPHASE DECODE RAW BIN" tooltip="Biphase Decode graph window binary " uniqueId="databiphraw" >
+		<item type="button" text="DECODE BIPHASE" tooltip="Press button to Biphase Decode graph window binary " action0="data biphaserawdecode" />
+		<item type="label" label="
+This function takes binary from the graph buffer and attempts to biphase decode it.
+The offset is intended to be used to align the encoding as unlike Manchester the 
+binary alone doesn't help us to do this. Still a work in progress. "		/>
+	</section>
+
+	<section title="DATA AUTOCORRELATION" tooltip="Attempt to Have Autocorrelation Over Window" uniqueId="dataautocorr" >
+		<item type="textbox" defaultValue="" tooltip="Window must be smaller than trace (default=4000; value = 0 not allowed)" uniqueId="autocorrwinlen" label="Window Lenght:" width="50" />	
+		<item type="checkbox" valueChecked="g" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, graph output (overwriting graphbuffer)" uniqueId="graph" text="Check to graph output"/>			
+		<item type="button" text="AUTOCORRELATE" tooltip="Press button to have have autocorrelation over window" action0="data autocorr $autocorrwinlen $graph" />
+	</section> 	
+	
+	<section title="DATA CLEAR BUFFER" tooltip="Clear sample buffer and graph window " uniqueId="dataclearbuff" >
+		<item type="button" text="CLEAR BUFFER" tooltip="Press button to clear sample buffer and graph window " action0="data buffclear" />
+	</section> 	
+	
+	<section title="DATA DECIMATE SAMPLES" tooltip="Decimate samples " uniqueId="datadec" >
+		<item type="button" text="DECIMATE SAMPLES" tooltip="Press button to decimate samples " action0="data dec" />
+		<item type="label" label="
+		This command removes every other sample from the trace buffer : in practice, this means it 
+		divides the sampling rate by two. Command dec exists partly for historical purposes : 
+		commands such as flexdemod and vchdemod were written for the Prox II, which had a sampling 
+		rate of half of the Prox3 sampling rate. For this reason, in order to get actual meaningful 
+		results from those commands, you should decimate the trace before issuing them.	" />
+	</section> 
+
+	<section title="DATA UNDECIMATE SAMPLES" tooltip="Decimate samples " uniqueId="dataundec" >
+		<item type="textbox" defaultValue="2" tooltip="Number of times to repeat each sample" uniqueId="undfac" label="The number of times to repeat each sample (default=2):" width="25" />		
+		<item type="button" text="UNDECIMATE SAMPLES" tooltip="Press button to decimate samples " action0="data undec $undfac" />
+	</section> 		
+	
+	<section title="DATA GRID" tooltip="Overlay grid on graph window" uniqueId="datagrid" >
+		<item type="textbox" defaultValue="0" tooltip="You can turn 'X' grid off by specifiyng a 0 value" uniqueId="x" label="Grid 'X' Value:" width="40" />	
+		<item type="textbox" defaultValue="0" tooltip="You can turn 'Y' grid off by specifiyng a 0 value" uniqueId="y" label="Grid 'Y' Value:" width="40" />			
+		<item type="button" text="OVERLAY GRID" tooltip="Press button to overlay grid on graph window" action0="data grid $x $y" />
+	</section> 	
+	
+	<section title="DATA HEX SAMPLES" tooltip="Dump big buffer as hex bytes - Used in particular for ISO14443-B reading commands " uniqueId="datahexsam" >
+		<item type="textbox" defaultValue="" tooltip="" uniqueId="samblocks" label="Blocks:" width="40" />	
+		<item type="textbox" defaultValue="" tooltip="" uniqueId="samoffset" label="Offset:" width="40" />			
+		<item type="button" text="DUMP BUFFER" tooltip="Press button to dump big buffer as hex bytes" action0="data hexsamples $samblocks $samoffset" />
+	</section> 	
+	
+	<section title="DATA HIDE GRAPH" tooltip="Hide graph window" uniqueId="datahidegraph" >
+		<item type="button" text="HIDE GRAPH" tooltip="Press button to hide graph window" action0="data hide" />
+	</section>		
+	
+	<section title="DATA REMOVE DC OFFSET" tooltip="Remove DC offset from trace" uniqueId="datahpf" >
+		<item type="button" text="REMOVE DC OFFSET" tooltip="Press button to remove DC offset from trace" action0="data hpf" />
+	</section>		
+	
+	<section title="DATA LOAD TRACE" tooltip="Load trace to graph window" uniqueId="dataload" >
+		<item type="browse-load" label="Type or Select trace file name to load:" defaultValue="" tooltip="Type the path to the file containing the trace data or press browse button to select it" uniqueId="datafilenameload" width="300" />	
+		<item type="button" text="LOAD TRACE" tooltip="Press button to load trace to graph window" action0="data load $datafilenameload" />
+	</section> 	
+	
+	<section title="DATA SAVE TRACE" tooltip="Save trace from graph window" uniqueId="datasave" >
+		<item type="browse-save" label="Type or Select trace file name to save:" defaultValue="" tooltip="Type the path to the file containing the trace data or press browse button to select it" uniqueId="datafilenamesave" width="300" />
+		<item type="button" text="SAVE TRACE" tooltip="Press button to save trace to graph window" action0="data save $datafilenamesave" />
+	</section> 	
+	
+	<section title="DATA TRIM SAMPLES" tooltip="Trim samples from left of trace" uniqueId="datatrim" >
+		<item type="textbox" defaultValue="" tooltip="Enter samples" uniqueId="datatrimsam" label="Samples:" width="120" />	
+		<item type="button" text="TRIM" tooltip="Press button to trim samples from left of trace" action0="data ltrim $datatrimsam" />
+	</section>	
+	
+	<section title="DATA MANCHESTER MODULATE" tooltip="Manchester modulate a binary stream" uniqueId="datamanchmod" >
+		<item type="textbox" defaultValue="" tooltip="Enter clock rate" uniqueId="dataclockrate" label="Clock Rate:" width="120" />	
+		<item type="button" text="MANCHESTER MODULATE" tooltip="Press button to manchester modulate a binary stream " action0="data manmod $dataclockrate" />
+	</section>
+	
+	<section title="DATA NORMALIZE" tooltip="Normalize max/min to +/-500" uniqueId="datanorm" >
+		<item type="button" text="NORMALIZE" tooltip="Press button to normalize max/min to +/-500" action0="data norm" />
+	</section>	
+	
+	<section title="DATA PLOT" tooltip="Show graph window" uniqueId="dataplot" >
+		<item type="button" text="PLOT GRAPH" tooltip="Press button to Show graph window (hit 'h' in window for keystroke help)" action0="data plot" />
+		<item type="label" label="" />
+		<item type="label" label="NOTES: To act inside the plot window, use the following keyboard keys" />
+		<item type="label" label="LEGEND:\r\rUP ARROW            = Zoom Out\rDOWN ARROW          = Zoom In\rLEFT ARROW          = Move Left\rCTRL+LEFT ARROW     = Move Left 1 sample\rSHIFT+LEFT ARROW    = Move Left 1 page\rRIGHT ARROW         = Move Right\rCTRL+RIGHT ARROW    = Move Right 1 sample\rSHIFT+RIGHT ARROW   = Move Right 1 page\rLEFT MOUSE CLICK    = Set yellow cursor\rRIGHT MOUSE CLICK   = Set purple cursor\rG                   = Toggle grid display\rH                   = Show help\rL                   = Toggle lock grid relative to samples\rQ                   = Hide window" />
+	</section>	
+
+	<section title="DATA PRINT RAW ID" tooltip="Prints the demodulated binary (raw ID) in the demodbuffer" uniqueId="dataprntraw" >
+		<item type="checkbox" valueChecked="x" valueUnchecked="" defaultValue="unchecked" tooltip="If checked, just shows raw data" uniqueId="rawhex" text="Check to print in Hex"/>	
+		<item type="button" text="PRINT RAW ID" tooltip="Press button to demodulated binary (raw ID) in the demodbuffer" action0="data printdemodbuf $rawhex" />
+			<item type="label" label="----------" />
+			<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="data printdemodbuffer h" />		
+	</section>
+	
+	<section title="DATA GET BITSTREAM" tooltip="Converts graph wave to raw binary (based on sample value superior to 1 or lower than 1) (used by lf sim)" uniqueId="datagetbitstr" >
+		<item type="button" text="GET BITSTREAM" tooltip="Press button to get biststream" action0="data getbitstream" />
+	</section>	
+	
+	<section title="DATA R-TRIM SAMPLES" tooltip="Trim samples back to entered location" uniqueId="datatrim" >
+		<item type="textbox" defaultValue="" tooltip="Enter Location to trim back to" uniqueId="datartrimsam" label="Samples:" width="120" />	
+		<item type="button" text="R-TRIM" tooltip="Press button to trim samples from right of trace" action0="data rtrim $datartrimsam" />
+		<item type="label" label="
+This command allow you to truncate the graph buffer samples.		" />
+	</section>		
+	
+	<section title="DATA GET RAW SAMPLES" tooltip="Get raw samples for graph window" uniqueId="datagetsam" >
+		<item type="textbox" defaultValue="" tooltip="Enter samples to get" uniqueId="dsamples" label="Samples to Get (value between 128 - 16000):" width="40" />	
+		<item type="button" text="GET RAW SAMPLES" tooltip="Press button to get raw samples for graph window " action0="data samples $dsamples" />
+	</section>
+	
+	<section title="DATA SET SCALE" tooltip="Set cursor display scale" uniqueId="datascale" >
+		<item type="textbox" defaultValue="" tooltip="Enter scale frequency in kHz" uniqueId="datascalehz" label="Scale (expressed in kHz; ex.125 = 125kHz):" width="50" />	
+		<item type="button" text="SET SCALE" tooltip="Press button to set cursor display scale" action0="data scale $datascalehz" />
+	</section>	
+	
+	<section title="DATA SHIFTGRAPHZERO" tooltip="Shift midpoint of waves + or - entered value and normalize" uniqueId="datashiftgz" >
+		<item type="textbox" defaultValue="" tooltip="Shift midpoint of waves + or - entered value and normalize" uniqueId="datashiftg" label="Threshold (positive or negative):" width="50" />	
+		<item type="button" text="SET THRESHOLD" tooltip="Press button to maximize/minimize every value in the graph window depending on threshold " action0="data shiftgraphzero $datashiftg" />
+	</section>		
+	
+	<section title="DATA DIRTHRESHOLD" tooltip="Max rising higher up-thres/ Min falling lower down-thres, keep rest as prev." uniqueId="datadirthreshold" >
+		<item type="textbox" defaultValue="" tooltip="Enter threshold UP" uniqueId="datathreup" label="Threshold UP:" width="50" />	
+		<item type="textbox" defaultValue="" tooltip="Enter threshold DOWN" uniqueId="datathredown" label="Threshold DOWN:" width="50" />	
+		<item type="button" text="SET THRESHOLD" tooltip="Press button to maximize/minimize every value in the graph window depending on threshold " action0="data dirthreshold $datathreup $datathredown" />
+	</section>	
+	
+	<section title="DATA ZEROCROSSING" tooltip="Count time between zero-crossings" uniqueId="datazerocross" >
+		<item type="button" text="COUNT TIME" tooltip="Press button to count time between zero-crossings" action0="data zerocrossings" />
+	</section>	
+	
+	<section title="DATA Help" tooltip="Help command shows Data available commands" uniqueId="datah" >
+		<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="data help" />
+	</section> 
+	
+</section>
+
+
+<section title="Hardware" tooltip="PM3 Hardware Settings">
+
+		<section title="Detect Reader" tooltip="Detect external reader field" uniqueId="HWdetect" >
+			<item type="drop-down" values="h,l, " defaultValue="" tooltip="Select frequency to scan (if none both will be scanned)" uniqueId="freq" text="select frequency (l=low; h=high)" width="30" />			
+			<item type="button" text="DETECT FILED" label="(to stop action, press PM3 button 2 times)" tooltip="Press to detect reader field" action0="hw detectreader $freq" />
+			<item type="label" label="\rThis just listens for an external reader field and lights up green for HF and/or red for LF; Button press exits.\rOutput columns are:\rPREVIOUS, CURRENT, LOOPS where:\r   PREVIOUS is the ADC value we just changed from;\r   CURRENT is the value we changed to;\r   LOOPS is the number of times we went around the loop between changes,\r\rIt would obviously be more helpful to have an actual time, but since the resolution proved\rnot to be high enough to be able to measure reader commands (which is why I started on this in the first place !) I didn't bother...
+
+However, it proved to be a useful little feature when you're wondering what that reader on the wall is actually listening for...
+Here it is in action :
+
+proxmark3> detectreader
+> detectreader
+#db# LF 125/134 Baseline:
+#db# 00000000, 00000000, 00000000
+
+#db# HF 13.56 Baseline:
+#db# 00000000, 00000000, 00000000
+
+#db# HF 13.56 Field Change:
+#db# 00000000, 0000000b, 0000c899
+
+#db# HF 13.56 Field Change:
+#db# 0000000b, 00000000, 00000001
+
+It's also great for seeing how far out the reader field extends (or how sensitive your antenna is)"
+/>
+		</section> 	
+		
+		<section title="FPGA Off" tooltip="Set FPGA Off" uniqueId="fpgaoff" >
+			<item type="button" text="FPGA Off" tooltip="Press to turn FPGA Off" action0="hw fpgaoff" />
+			<item type="label" label="Set FPGA off, meaning all signal lines are driven low; \rin this mode the FPGA does not modulate the antenna or route any inbound signals;\rthis does not turn off power to the FPGA." />
+		</section> 		
+
+		<section title="LCD" tooltip="LCD Settings - Use on PM3 with LCD only" uniqueId="lcdset" >
+						<section title="Send Commands" tooltip="Send Commands to LCD - Works on PM3 with LCD only" uniqueId="cmdlcd" >
+							<item type="textbox" defaultValue="" tooltip="Hex command to be sent to LCD" uniqueId="LCDCommand" label="Command to be sent (in hex)"/>				
+							<item type="textbox" defaultValue="" tooltip="Count" uniqueId="LCDCount" label="Count"/>		
+							<item type="button" text="SEND COMMAND" tooltip="Press button to Send Command to LCD" action0="hw lcd $LCDCommand $LCDCount" />	
+						</section>
+						<section title="Reset LCD" tooltip="Reset LCD Hardware - Works on PM3 with LCD only" uniqueId="lcdreset" >
+							<item type="button" text="RESET" tooltip="Press button to Reset LCD Hardware" action0="hw lcdreset" />						
+						</section>
+		</section> 	
+		
+		<section title="Read Flash Memory" tooltip="Read Memory from PM3 flash" uniqueId="readpm3flashmem" >
+			<item type="textbox" defaultValue="" tooltip="Address to be read from flash (in hex)" uniqueId="readpm3flash" label=""/>				
+			<item type="button" text="READ ADDRESS" tooltip="Press button to read memory at decimal address from flash" action0="hw readmem $readpm3flash" />	
+		</section>	
+
+		<section title="Reset PM3" tooltip="Reset PM3 Hardware" uniqueId="pm3reset" >
+			<item type="button" text="RESET" tooltip="Press button to Reset the PM3" action0="hw reset" label="(this also disconnect PM3 from USB)" />
+		</section> 	
+
+		<section title="Drive LF antenna" tooltip="Drive LF antenna at specific frequency" uniqueId="driveantenna" >
+			<item type="drop-down" defaultValue="19" values="19:255" tooltip="Drive LF antenna at 12Mhz/(divisor+1)" uniqueId="antenna12" label="Divisor value:"  width="50"/>
+			<item type="button" text="DRIVE ANTENNA" tooltip="Press button to Drive LF antenna at 12Mhz" action0="hw setlfdivisor $antenna12" />	
+		</section>			
+		
+		<section title="Mux Settings" tooltip="Set the ADC mux to a specific value" uniqueId="setmux" >
+			<item type="drop-down" defaultValue="loraw" values="loraw,hiraw,lopkd,hipkd" tooltip="Mux can be: loraw, hiraw, lopkd or hipkd " uniqueId="setmuxcurtain" label="Mode" width="60" />
+			<item type="button" text="SET MUX" tooltip="Press button to Set Mux Mode" action0="hw setmux $setmuxcurtain" />
+		</section>
+
+		<section title="Tune" tooltip="Test and Shows antenna characteristics" uniqueId="hwtune" >
+			<item type="button" text="TEST ANTENNA" tooltip="Press button to obtain actual connected antenna characteristics" action0="hw tune" />
+			<item type="label" label="
+			Measure antenna tuning
+
+This command can be issued to verify that the antennas work properly. Run tune and wait about 8 seconds for the 
+sweep to complete and the output values to be printed. The typical output of the 'tune' command should return values 
+in this region:
+
+# LF antenna @  33.97 V @   125.00Khz
+# LF antenna @  22.29 V @   134.00Khz
+# LF optimal @  33.97 V @   125.00Khz
+# HF antenna @  14.27 V @    13.56Mhz
+Read the section on antenna building for more details on how to use this command.
+
+For a graphical view of the results issue the plot command. The output shows the voltage measured on the antennas 
+at the most commonly used frequencies 125/134Khz and 13.56Mhz. It also shows where the LF antenna peak voltage 
+occured (LF optimal value) which is where the LF antenna peak resonance is. This command can be used to check 
+whether the LF antenna is properly tuned to the frequency you expect, typically a LF antenna should be tuned to 
+129Khz for best results with both 125Khz and 134Khz tags." />
+		</section> 		
+
+		<section title="Version" tooltip="Shows Proxmark3 Firmware Revisions" uniqueId="hwverion" >
+			<item type="button" text="SHOW VERSION" tooltip="Press button to obtain PM3 Bootloader, OS and FPG revisions" action0="hw version" />
+		</section> 			
+		
+		<section title="Help" tooltip="Help command shows Hardware available commands" uniqueId="hwh" >
+			<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="hw help" />
+		</section> 	
+
+</section> 	
+
+<section title="Scripting" tooltip="Run proxmark3 scripts (.lua)">
+		<section title="RUN" tooltip="Execute specified .lua file contained in the \scripts folder" uniqueId="scriptrun">
+			<item type="button" text="LIST SCRIPTS" tooltip="Press button to see .lua script list" action0="script list" />
+						<item type="label" label="------------------------------------------------------------------
+						Script File Name (with or without .lua extension):" />					
+			<item type="textbox" label="" defaultValue="ScriptName.lua" tooltip="Type the .lua script file name to load" uniqueId="filetorun" width="100" />					
+			<item type="button" text="RUN Lua SCRIPT" tooltip="Press button to run .lua script" action0="script run $filetorun" />
+						<item type="label" label="
+						For further information on scripts please visit: 
+						
+						http://martin.swende.se/blog/Proxmark3.html
+						http://martin.swende.se/blog/Proxmark_Scripting_1.html
+						http://martin.swende.se/blog/Proxmark_Scripting_2.html
+						
+					------------------------------------------------------------------" />			
+		</section>
+
+		<section title="Help" tooltip="Help command shows script available commands" uniqueId="scripth">
+			<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="script help" />
+		</section>
+</section> 
+
+<section title="MANUAL COMMANDS" tooltip="Send commands just like if you are in a shell command line" uniqueId="1m" >
+					<item type="textbox" defaultValue="" tooltip="Enter a proxmark3 command just like if you are in a shell and press the button !" uniqueId="manualcmd" label="Command:" width="210"/>	
+	<item type="button" text="SEND MANUAL COMMAND" tooltip="Press button send the above command" action0=" $manualcmd" />
+</section> 
+
+<section title="HELP GENERAL" tooltip="Help command shows PM3 available commands" uniqueId="1h" >
+	<item type="button" text="HELP" tooltip="Press button to obtain the Help info" action0="help" />
+</section> 	
+
+
+<section title="EXIT" tooltip="Exit PM3 client" uniqueId="99" >
+	<item type="button" text="EXIT" tooltip="Press button to exit PM3 client (after this you need to re-select COM port to re-use PM3)" action0="exit" />	
+</section>
+
+</pm3>
