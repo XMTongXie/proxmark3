@@ -1,0 +1,3 @@
+mfkey32.exe e68487f3 01020304 32a2d90c a385ef6e f963976e 54453d36
+
+pause.
