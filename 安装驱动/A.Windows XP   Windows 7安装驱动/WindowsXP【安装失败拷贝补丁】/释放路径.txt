@@ -1,0 +1,5 @@
+将mdmcpq.inf复制到c:\windows\inf
+
+将usbser.sys复制到c:\windows\system32\drivers
+
+本文来自移动叔叔论坛 ，详细出处请参考:http://bbs.ydss.cn/thread-129301-1-1.html

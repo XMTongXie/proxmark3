@@ -1,0 +1,8 @@
+windows10如何禁用驱动签名验证：
+
+http://jingyan.baidu.com/article/29697b910f8f59ab20de3c9e.html
+
+
+windows8如何禁用驱动签名验证：
+
+http://jingyan.baidu.com/article/3f16e003d1f4612591c103ce.html

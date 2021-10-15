@@ -1,0 +1,1005 @@
+help             This help. Use '<command> help' for details of a particular command.
+data             { Plot window / data buffer manipulation... }
+hf               { High Frequency commands... }
+hw               { Hardware commands... }
+lf               { Low Frequency commands... }
+script           { Scripting commands }
+quit             Exit program
+exit             Exit program
+help             This help. Use '<command> help' for details of a particular command.
+data             { Plot window / data buffer manipulation... }
+hf               { High Frequency commands... }
+hw               { Hardware commands... }
+lf               { Low Frequency commands... }
+script           { Scripting commands }
+quit             Exit program
+exit             Exit program
+Sending bytes to proxmark failed - offline
+
+No response from Proxmark. Aborting...
+Sending bytes to proxmark failed - offline
+
+No response from Proxmark. Aborting...
+Sending bytes to proxmark failed - offline
+
+No response from Proxmark. Aborting...
+Sending bytes to proxmark failed - offline
+
+No response from Proxmark. Aborting...
+Sending bytes to proxmark failed - offline
+
+No response from Proxmark. Aborting...
+Sending bytes to proxmark failed - offline
+
+No response from Proxmark. Aborting...
+Sending bytes to proxmark failed - offline
+
+No response from Proxmark. Aborting...
+help             This help
+detectreader     ['l'|'h'] -- Detect external reader field (option 'l' or 'h' to limit to LF or HF)
+fpgaoff          Set FPGA off
+lcd              <HEX command> <count> -- Send command/data to LCD
+lcdreset         Hardware reset LCD
+readmem          [address] -- Read memory at decimal address from flash
+reset            Reset the Proxmark3
+setlfdivisor     <19 - 255> -- Drive LF antenna at 12Mhz/(divisor+1)
+setmux           <loraw|hiraw|lopkd|hipkd> -- Set the ADC mux to a specific value
+tune             Measure antenna tuning
+version          Show version information about the connected Proxmark
+
+# LF antenna:  9.07 V @   125.00 kHz
+# LF antenna: 711852.03 V @   134.00 kHz
+# LF optimal: 1081344.00 V @   151.90 kHz
+# HF antenna: 23.11 V @    13.56 MHz
+Displaying LF tuning graph. Divisor 89 is 134khz, 95 is 125khz.
+
+
+
+iso14443a card select failed
+iso14443a card select failed
+#db# unknown command:: 0x0301       
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: 6e 6f 6f 6f 6e 6e 6f 6e ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+
+No Known Tags Found!
+
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: 95 93 92 8e 8d 8c 8a 88 ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+Could not detect modulation automatically. Try setting it manually with 'lf t55xx config'
+Could not detect modulation automatically. Try setting it manually with 'lf t55xx config'
+help             This help
+config           Set/Get T55XX configuration (modulation, inverted, offset, rate)
+detect           [1] Try detecting the tag modulation from reading the configuration block.
+read             <block> [password] -- Read T55xx block data (page 0) [optional password]
+write            <block> <data> [password] -- Write T55xx block data (page 0) [optional password]
+trace            [1] Show T55xx traceability data (page 1/ blk 0-1)
+info             [1] Show T55xx configuration data (page 0/ blk 0)
+dump             [password] Dump T55xx card block 0-7. [optional password]
+special          Show block changes with 64 different offsets
+Could not detect modulation automatically. Try setting it manually with 'lf t55xx config'
+
+# LF antenna: 13.06 V @   125.00 kHz
+# LF antenna: 1216479.23 V @   134.00 kHz
+# LF optimal: 1378680.83 V @   139.53 kHz
+# HF antenna: 23.01 V @    13.56 MHz
+Displaying LF tuning graph. Divisor 89 is 134khz, 95 is 125khz.
+
+
+
+help             This help
+config           Set/Get T55XX configuration (modulation, inverted, offset, rate)
+detect           [1] Try detecting the tag modulation from reading the configuration block.
+read             <block> [password] -- Read T55xx block data (page 0) [optional password]
+write            <block> <data> [password] -- Write T55xx block data (page 0) [optional password]
+trace            [1] Show T55xx traceability data (page 1/ blk 0-1)
+info             [1] Show T55xx configuration data (page 0/ blk 0)
+dump             [password] Dump T55xx card block 0-7. [optional password]
+special          Show block changes with 64 different offsets
+password must include 8 HEX symbols
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: f6 f1 eb e3 da d3 cd c3 ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+
+No Known Tags Found!
+
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: 97 94 92 91 8e 89 8a 8a ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+Writing T55x7 tag with UID 0x3f0059ec65 (clock rate: 64)
+#db# Started writing T55x7 tag ...       
+#db# Clock rate: 64       
+#db# Tag T55x7 written with 0xff9bc002a5dc3142
+       
+Writing T55x7 tag with UID 0x3f0059ec65 (clock rate: 64)
+#db# Started writing T55x7 tag ...       
+#db# Clock rate: 64       
+#db# Tag T55x7 written with 0xff9bc002a5dc3142
+       
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: ec df da d4 ca c5 c1 b7 ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: ff ff ff ff ff ff ff ff ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: 95 93 93 8f 8d 8d 8a 87 ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: ff ff ff fb f1 e8 e1 d7 ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: ff ff f7 f0 e8 df d8 d0 ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: 8d 8b 89 88 87 85 85 83 ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: ec e6 dd d6 d1 c7 c2 bd ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: c7 c0 ba b7 b0 ae aa a5 ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: ff ff ff ff ff ff ff ff ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+Writing T55x7 tag with UID 0x3f0059ec65 (clock rate: 64)
+#db# Started writing T55x7 tag ...       
+#db# Clock rate: 64       
+#db# Tag T55x7 written with 0xff9bc002a5dc3142
+       
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: 6f 6f 6f 6f 6f 6f 6f 6f ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+
+No Known Tags Found!
+
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: ff f9 ee e4 de d6 ce c8 ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: ff ff ff ff ff ff ff ff ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+help             This help
+em410xdemod      [findone] -- Extract ID from EM410x tag (option 0 for continuous loop, 1 for only 1 tag)
+em410xread       [clock rate] -- Extract ID from EM410x tag
+em410xsim        <UID> -- Simulate EM410x tag
+em410xwatch      ['h'] -- Watches for EM410x 125/134 kHz tags (option 'h' for 134)
+em410xspoof      ['h'] --- Watches for EM410x 125/134 kHz tags, and replays them. (option 'h' for 134)
+em410xwrite      <UID> <'0' T5555> <'1' T55x7> [clock rate] -- Write EM410x UID to T5555(Q5) or T55x7 tag, optionally setting clock rate
+em4x50read       Extract data from EM4x50 tag
+readword         <Word> -- Read EM4xxx word data
+readwordPWD      <Word> <Password> -- Read EM4xxx word data in password mode
+writeword        <Data> <Word> -- Write EM4xxx word data
+writewordPWD     <Data> <Word> <Password> -- Write EM4xxx word data in password mode
+help             This help
+em410xdemod      [findone] -- Extract ID from EM410x tag (option 0 for continuous loop, 1 for only 1 tag)
+em410xread       [clock rate] -- Extract ID from EM410x tag
+em410xsim        <UID> -- Simulate EM410x tag
+em410xwatch      ['h'] -- Watches for EM410x 125/134 kHz tags (option 'h' for 134)
+em410xspoof      ['h'] --- Watches for EM410x 125/134 kHz tags, and replays them. (option 'h' for 134)
+em410xwrite      <UID> <'0' T5555> <'1' T55x7> [clock rate] -- Write EM410x UID to T5555(Q5) or T55x7 tag, optionally setting clock rate
+em4x50read       Extract data from EM4x50 tag
+readword         <Word> -- Read EM4xxx word data
+readwordPWD      <Word> <Password> -- Read EM4xxx word data in password mode
+writeword        <Data> <Word> -- Write EM4xxx word data
+writewordPWD     <Data> <Word> <Password> -- Write EM4xxx word data in password mode
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: ff ff f8 ee e5 df d7 cf ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: 6e 6d 6e 6e 6e 6e 6e 6f ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+
+No Known Tags Found!
+
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: ff ff ff ff ff f7 ee e4 ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+
+No Known Tags Found!
+
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: 6e 6e 6d 6e 6e 6e 6e 6e ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+
+No Known Tags Found!
+
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: 6e 6e 6e 6e 6e 6e 6e 6f ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+
+No Known Tags Found!
+
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: 6d 6e 6e 6e 6d 6e 6e 6e ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+
+No Known Tags Found!
+
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: 6e 6e 6e 6e 6e 6e 6f 6e ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+
+No Known Tags Found!
+
+help             This help
+detectreader     ['l'|'h'] -- Detect external reader field (option 'l' or 'h' to limit to LF or HF)
+fpgaoff          Set FPGA off
+lcd              <HEX command> <count> -- Send command/data to LCD
+lcdreset         Hardware reset LCD
+readmem          [address] -- Read memory at decimal address from flash
+reset            Reset the Proxmark3
+setlfdivisor     <19 - 255> -- Drive LF antenna at 12Mhz/(divisor+1)
+setmux           <loraw|hiraw|lopkd|hipkd> -- Set the ADC mux to a specific value
+tune             Measure antenna tuning
+version          Show version information about the connected Proxmark
+
+# LF antenna: 24.75 V @   125.00 kHz
+# LF antenna: 1775173.63 V @   134.00 kHz
+# LF optimal: 1919352.83 V @   129.03 kHz
+# HF antenna: 23.11 V @    13.56 MHz
+Displaying LF tuning graph. Divisor 89 is 134khz, 95 is 125khz.
+
+
+
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: 6d 6d 6d 6c 6c 6c 6d 6c ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+
+No Known Tags Found!
+
+#db# LF Sampling config       
+#db#   [q] divisor.............95 (125 KHz)       
+#db#   [b] bps.................8       
+#db#   [d] decimation..........1       
+#db#   [a] averaging...........Yes       
+#db#   [t] trigger threshold...0       
+#db# Done, saved 40000 out of 40000 seen samples at 8 bits/sample       
+#db# buffer samples: ff ff ff f7 ef e4 d9 d6 ...       
+Reading 20000 bytes from device memory
+
+Data fetched
+Samples @ 8 bits/smpl, decimation 1:1 
+NOTE: some demods output possible binary
+  if it finds something that looks like a tag
+False Positives ARE possible
+
+
+Checking for known tags:
+
+EM410x pattern found: 
+
+EM TAG ID      : 3f0059ec65
+Unique TAG ID  : fc009a37a6
+
+Possible de-scramble patterns
+HoneyWell IdentKey {
+DEZ 8          : 05893221
+DEZ 10         : 0005893221
+DEZ 5.5        : 00089.60517
+DEZ 3.5A       : 063.60517
+DEZ 3.5B       : 000.60517
+DEZ 3.5C       : 089.60517
+DEZ 14/IK2     : 00270588832869
+DEZ 15/IK3     : 001082341865382
+DEZ 20/ZK      : 15120000091003071006
+}
+Other          : 60517_089_05893221
+Pattern Paxton : 1064184421
+Pattern 1      : 0xC6BB54 - 13024084
+Pattern Sebury : 60517 89 5893221  (hex: EC65 59 59EC65)
+
+Valid EM410x ID Found!
+Writing T55x7 tag with UID 0x3f0059ec65 (clock rate: 64)
+#db# Started writing T55x7 tag ...       
+#db# Clock rate: 64       
+#db# Tag T55x7 written with 0xff9bc002a5dc3142
+       
